@@ -1,75 +1,104 @@
 # AS66A-Front-End-Certificadora-Especifica
 
-📊 Calculadora de Investimentos de Renda Fixa
+# 📊 Calculadora de Investimentos de Renda Fixa
 
-Este repositório contém o código-fonte da aplicação de frontend do projeto "Calculadora de Investimentos de Renda Fixa".
-A aplicação foi desenvolvida em HTML, CSS e JavaScript puro para simular o retorno de investimentos em renda fixa.
+Este repositório contém o **código-fonte da aplicação de frontend** do projeto **"Calculadora de Investimentos de Renda Fixa"**.  
+A aplicação foi desenvolvida em **HTML, CSS e JavaScript puro** para simular o retorno de investimentos em renda fixa.
+
 ---
-🎯 Objetivo do Projeto
 
-O objetivo principal é desenvolver uma aplicação web que permita a simulação do retorno de investimentos em Renda Fixa para pessoas físicas.
+## 🎯 Objetivo do Projeto
 
-A aplicação considera:
+O objetivo principal é desenvolver uma aplicação web que permita a **simulação do retorno de investimentos em Renda Fixa para pessoas físicas**.  
 
-Valor investido
-
-Prazo
-
-Taxa de juros
-
-Regras de tributação (IOF e IRRF)
-
-Taxas adicionais
+A aplicação considera:  
+* Valor investido  
+* Prazo  
+* Taxa de juros  
+* Regras de tributação (**IOF e IRRF**)  
+* Taxas adicionais  
 
 Com isso, fornece uma visão detalhada do retorno do investimento.
+
 ---
-👨‍💻 Membros do Grupo
 
-Matheus Faustino Meneguim – Prototipagem, documentação, gestão do projeto, suporte em UX/UI e frontend.
+## 👨‍💻 Membros do Grupo
 
-André Faria de Souza – Desenvolvimento Backend.
+* **Matheus Faustino Meneguim** – Prototipagem, documentação, gestão do projeto, suporte em UX/UI e frontend.  
+* **André Faria de Souza** – Desenvolvimento Backend.  
+* **Maria Clara S. Furini** – Testes e desenvolvimento Frontend.  
+* **Igor Batista Lima** – Desenvolvimento Backend (login/cadastro, roteamento, segurança, banco de dados).  
+* **Eduardo Affonso Kasprovicz** – Desenvolvimento Backend (login/cadastro, roteamento, segurança, banco de dados).  
+* **Sarah Kelly Almeida** – Desenvolvimento Frontend.  
 
-Maria Clara S. Furini – Testes e desenvolvimento Frontend.
+---
 
-Igor Batista Lima – Desenvolvimento Backend (login/cadastro, roteamento, segurança, banco de dados).
+## ⚙️ Funcionalidades (Frontend)
 
-Eduardo Affonso Kasprovicz – Desenvolvimento Backend (login/cadastro, roteamento, segurança, banco de dados).
+* **Página Inicial (Landing Page)**  
+  Apresenta o projeto e direciona o usuário para a calculadora, com CTAs para iniciar a simulação.  
 
-Sarah Kelly Almeida – Desenvolvimento Frontend.
+* **Página da Calculadora**  
+  Formulário para entrada de dados (valor, prazo, taxas, etc.) e exibição detalhada dos resultados.  
 
-⚙️ Funcionalidades (Frontend)
+* **Discriminação de Resultados**  
+  Exibe Valor Bruto, Valor Líquido, Lucro Bruto e Custos Totais (IRRF, IOF e Taxa de Custódia).  
 
-Página Inicial (Landing Page)
-Apresenta o projeto e direciona o usuário para a calculadora, com CTAs para iniciar a simulação.
+* **Exportação de Dados**  
+  Permite exportar os resultados em formato CSV.  
 
-Página da Calculadora
-Formulário para entrada de dados (valor, prazo, taxas, etc.) e exibição detalhada dos resultados.
+* **Página de Comparação**  
+  Analisa **lado a lado** diferentes cenários de investimento.  
 
-Discriminação de Resultados
-Exibe Valor Bruto, Valor Líquido, Lucro Bruto e Custos Totais (IRRF, IOF e Taxa de Custódia).
+---
 
-Exportação de Dados
-Permite exportar os resultados em formato CSV.
+## 🛠️ Tecnologias Utilizadas
 
-Página de Comparação
-Analisa lado a lado diferentes cenários de investimento.
+* **HTML5** – Estruturação das páginas.  
+* **CSS3** – Estilização e design responsivo.  
+  * `global.css` → estilos globais  
+  * `landing-page.css` → estilos da Landing Page  
+  * `styles.css` → estilos da Calculadora  
+* **JavaScript (ES6+)** – Lógica interativa e integração com o backend.  
+  * `api.js` → comunicação com a API  
+  * `main.js` → interações, formulários e resultados  
 
-🛠️ Tecnologias Utilizadas
+🔎 **Observação:** Os cálculos financeiros são processados no backend, garantindo precisão nas regras de juros, IRRF, IOF e taxas.
 
-HTML5 – Estruturação das páginas.
+---
 
-CSS3 – Estilização e design responsivo.
+## 📂 Estrutura do Projeto
 
-global.css → estilos globais
+```bash
+.
+├── .gitignore
+├── README.md
+├── frontend/
+│   ├── index.html          # Página principal (Landing Page)
+│   ├── calculadora.html    # Página da Calculadora
+│   ├── comparacao.html     # Página de Comparação
+│   └── assets/
+│       ├── css/
+│       │   ├── global.css
+│       │   ├── landing-page.css
+│       │   └── styles.css
+│       └── js/
+│           ├── api.js
+│           └── main.js
+├── backend/                # Diretório do backend (quando aplicável)
+└── .env                    # Variáveis de ambiente (backend)
+```
+---
+## 🚀 Como Executar o Projeto
 
-landing-page.css → estilos da Landing Page
+1. Clone este repositório:
+```
+git clone [URL_DO_SEU_REPOSITORIO]
+cd [nome-do-seu-repositorio]/frontend
+```
 
-styles.css → estilos da Calculadora
+2. Abra o arquivo index.html no navegador de sua preferência.
 
-JavaScript (ES6+) – Lógica interativa e integração com o backend.
+* Você pode clicar duas vezes no arquivo, ou
 
-api.js → comunicação com a API
-
-main.js → interações, formulários e resultados
-
-🔎 Observação: Os cálculos financeiros são processados no backend, garantindo precisão nas regras de juros, IRRF, IOF e taxas.
+* arrastar o arquivo para a janela do navegador.
