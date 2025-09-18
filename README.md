@@ -24,12 +24,12 @@ Com isso, fornece uma visão detalhada do retorno do investimento.
 
 ## 👨‍💻 Membros do Grupo
 
-* **Matheus Faustino Meneguim** – Prototipagem, documentação, gestão do projeto, suporte em UX/UI e frontend.  
-* **André Faria de Souza** – Desenvolvimento Backend.  
-* **Maria Clara S. Furini** – Testes e desenvolvimento Frontend.  
-* **Igor Batista Lima** – Desenvolvimento Backend (login/cadastro, roteamento, segurança, banco de dados).  
-* **Eduardo Affonso Kasprovicz** – Desenvolvimento Backend (login/cadastro, roteamento, segurança, banco de dados).  
-* **Sarah Kelly Almeida** – Desenvolvimento Frontend.  
+* **Matheus Faustino Meneguim** – Responsável pela prototipagem, documentação, gestão do projeto, ajudar no front-end, UX/UI.  
+* **André Faria de Souza** – Responsável pelo desenvolvimento Front end e ajudar no backend.  
+* **Maria Clara S. Furini** – Responsável pelos testes e desenvolvimento Front end.  
+* **Igor Batista Lima** – Responsável pelo desenvolvimento Backend (Login/cadastro, roteamento, segurança, banco de dados).  
+* **Eduardo Affonso Kasprovicz** –  Responsável pelo desenvolvimento Backend (Login/cadastro, roteamento, segurança, banco de dados). 
+* **Sarah Kelly Almeida** – Responsável pelo desenvolvimento Front-end. 
 
 ---
 
