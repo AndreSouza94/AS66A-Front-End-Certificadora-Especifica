@@ -1,3 +1,13 @@
+(function() {
+    const token = localStorage.getItem('token');
+    // Verifica se está na página da calculadora e se não há token
+    if (window.location.pathname.includes('calculadora.html') && !token) { 
+        alert('Você precisa estar logado para acessar a calculadora. Redirecionando para a tela de Login.');
+        // Redireciona para a página de login
+        window.location.href = 'login.html'; 
+    }
+})();
+
 // ===== MOCK DE TAXAS (depois podemos puxar de API) =====
 const taxas = {
   selic: 10.75,
