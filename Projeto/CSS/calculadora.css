@@ -1,0 +1,193 @@
+/* ===== RESET BÁSICO ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+}
+
+body {
+  background: #0d0d0f;
+  color: #fff;
+  padding-bottom: 50px;
+}
+
+/* ===== HEADER ===== */
+.header {
+  width: 100%;
+  padding: 20px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: 600;
+  color: #ffa533;
+}
+
+.btn-voltar {
+  color: #ffa533;
+  font-size: 14px;
+  text-decoration: none;
+  border: 1px solid #ffa533;
+  padding: 6px 14px;
+  border-radius: 6px;
+  transition: 0.3s ease;
+}
+
+.btn-voltar:hover {
+  background: #ffa533;
+  color: #000;
+}
+
+/* ===== CONTAINER PRINCIPAL ===== */
+.container {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 20px;
+  text-align: center;
+}
+
+.titulo {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  background: linear-gradient(90deg, #ffa533, #ffd38a);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.subtitulo {
+  font-size: 14px;
+  color: #aaa;
+  margin-bottom: 30px;
+}
+
+/* ===== CARDS DE TAXAS ===== */
+.taxas-container {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.card-taxa {
+  background: rgba(255,255,255,0.03);
+  padding: 14px 18px;
+  border-radius: 10px;
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.06);
+  width: 120px;
+  transition: 0.2s;
+}
+
+.card-taxa:hover {
+  border-color: #ffa533;
+}
+
+.card-taxa .label {
+  font-size: 12px;
+  color: #aaa;
+  margin-bottom: 4px;
+}
+
+.card-taxa .valor {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+/* ===== FORM ===== */
+.form-container {
+  background: rgba(255,255,255,0.04);
+  padding: 20px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.08);
+  margin-bottom: 30px;
+}
+
+.secao-titulo {
+  font-size: 16px;
+  margin-bottom: 20px;
+  font-weight: 600;
+  color: #ffa533;
+}
+
+.form-grupo {
+  text-align: left;
+  margin-bottom: 16px;
+}
+
+.form-grupo label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 14px;
+  color: #ccc;
+}
+
+input, select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.05);
+  color: #fff;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: #ffa533;
+  background: rgba(255,255,255,0.08);
+}
+
+.btn-calcular {
+  background: linear-gradient(90deg, #ffa533, #ff8a05);
+  border: none;
+  padding: 12px 20px;
+  width: 100%;
+  border-radius: 8px;
+  font-weight: 600;
+  color: #000;
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+.btn-calcular:hover {
+  filter: brightness(1.1);
+}
+
+/* ===== RESULTADOS ===== */
+.resultado-container {
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+}
+
+.card-resultado {
+  background: rgba(255,255,255,0.04);
+  padding: 16px;
+  border-radius: 12px;
+  min-width: 180px;
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: 0.2s;
+}
+
+.card-resultado:hover {
+  border-color: #ffa533;
+}
+
+.card-resultado .label {
+  font-size: 12px;
+  color: #ccc;
+}
+
+.card-resultado .valor {
+  font-size: 18px;
+  font-weight: 600;
+  margin-top: 6px;
+  color: #ffa533;
+}

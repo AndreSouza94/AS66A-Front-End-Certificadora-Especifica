@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calculadora de Investimentos</title>
+  <link rel="stylesheet" href="CSS/calculadora.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="logo">💰 InvestCalc</div>
+    <a href="index.html" class="btn-voltar">← Voltar</a>
+  </header>
+
+  <!-- CONTAINER PRINCIPAL -->
+  <main class="container">
+    
+    <!-- TÍTULO -->
+    <h1 class="titulo">Simulador de Investimentos</h1>
+    <p class="subtitulo">Compare rendimentos com base na taxa SELIC / CDI / IPCA</p>
+
+    <!-- CARDS DE TAXAS (render via JS ou mock) -->
+    <section class="taxas-container" id="taxas-container">
+      <!-- Cards de taxa serão inseridos via JS -->
+    </section>
+
+    <!-- FORMULÁRIO -->
+    <section class="form-container">
+      <h2 class="secao-titulo">Preencha os dados para simular</h2>
+
+      <form id="form-calculadora">
+        <div class="form-grupo">
+          <label>Tipo de Investimento</label>
+          <select id="tipo">
+            <option value="cdb">CDB (Tributado)</option>
+            <option value="lci">LCI/LCA (Isento IR)</option>
+            <option value="tesouro">Tesouro Direto</option>
+          </select>
+        </div>
+
+        <div class="form-grupo">
+          <label>Valor Investido (R$)</label>
+          <input type="number" id="valor" placeholder="Ex: 1000" required />
+        </div>
+
+        <div class="form-grupo">
+          <label>Tempo (em meses)</label>
+          <input type="number" id="tempo" placeholder="Ex: 12" required />
+        </div>
+
+        <div class="form-grupo">
+          <label>Rentabilidade (% do CDI)</label>
+          <input type="number" id="rentabilidade" placeholder="Ex: 100" required />
+        </div>
+
+        <button type="submit" class="btn-calcular">Calcular</button>
+      </form>
+    </section>
+
+    <!-- RESULTADOS -->
+    <section class="resultado-container" id="resultado-container">
+      <!-- Resultado gerado via JS -->
+    </section>
+
+  </main>
+
+  <script src="calculadora.js"></script>
+</body>
+</html>
