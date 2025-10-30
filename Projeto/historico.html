@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Histórico de Simulações</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="./CSS/styles.css">
+
+  <style>
+    /* Estilo para garantir que o título do histórico se destaque */
+    .historico-titulo {
+        font-weight: 600;
+        color: #111827; 
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.1); 
+    }
+    
+    /* REMOÇÃO DA CLASSE CSS ANTIGA 'action-buttons' */
+
+    /* Garante que os botões tenham o mesmo tamanho */
+    #removeSelected, #exportCsv {
+        min-width: 200px; /* Adiciona largura mínima para melhor estética */
+        font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container mt-5">
+  <h2 class="text-center mb-4 historico-titulo">Histórico de Simulações</h2> 
+
+  <div class="table-responsive">
+    <table class="table table-dark table-striped">
+      <thead>
+        <tr>
+          <th><input type="checkbox" id="selectAll" title="Selecionar Todos"></th> 
+          <th>Data e Hora</th>
+          <th>Tipo de Investimento</th>
+          <th>Valor Inicial</th>
+          <th>Tempo (Anos)</th>
+          <th>Rentabilidade (%)</th>
+          <th>Valor Final Líquido</th>
+          <th>Lucro Líquido</th>
+        </tr>
+      </thead>
+      <tbody id="investmentTable">
+        <tr>
+          <td colspan="8" class="text-center">Carregando histórico...</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="action-button-container">
+    <button id="removeSelected" class="btn btn-danger mx-2">Remover Selecionados</button>
+    <button id="exportCsv" class="btn btn-success mx-2">Exportar CSV</button>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="./JS/export.js"></script>
+<script src="./JS/historico.js"></script>
+
+</body>
+</html>
