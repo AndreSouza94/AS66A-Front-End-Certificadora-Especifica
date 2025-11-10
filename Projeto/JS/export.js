@@ -1,13 +1,15 @@
-
 document.getElementById("exportCsv").addEventListener("click", function() {
   const table = document.querySelector(".table-dark"); // Seleciona a tabela principal
   const rows = table.querySelectorAll('tbody tr');
   const headerCells = table.querySelectorAll('thead th');
   let csv = [];
 
+  const COLUMNS_COUNT = headerCells.length; // Será 13 (1 checkbox + 12 dados)
+
   // 1. Pega as colunas do cabeçalho, ignorando a primeira (Checkbox)
   let header = [];
-  for (let i = 1; i < headerCells.length; i++) {
+  // Itera de 1 até o final para pegar todos os cabeçalhos de dados (12 colunas)
+  for (let i = 1; i < COLUMNS_COUNT; i++) {
     header.push(`"${headerCells[i].innerText.trim()}"`);
   }
   // Usa ponto e vírgula como separador para CSV pt-BR
@@ -15,22 +17,18 @@ document.getElementById("exportCsv").addEventListener("click", function() {
 
   // 2. Pega as linhas de dados, ignorando a primeira célula (Checkbox)
   rows.forEach(row => {
-    // Ignora linhas de mensagem (ex: "Nenhuma simulação...")
-    if (row.cells.length <= 1) return; 
+    // Ignora linhas de mensagem (colspan)
+    if (row.cells.length < COLUMNS_COUNT) return; 
 
     let rowData = [];
-    for (let j = 1; j < row.cells.length; j++) {
+    // Itera da coluna 1 (Data e Hora) até a última coluna de dados (12 colunas de dados)
+    for (let j = 1; j < COLUMNS_COUNT; j++) {
         let cellText = row.cells[j].innerText.trim();
         
-        // Remove 'R$' ou '%' e substitui vírgula por ponto para formato numérico
+        // Limpa 'R$' ou '%', remove pontos de milhar, troca vírgula decimal por ponto.
         cellText = cellText.replace('R$', '').replace('%', '').trim();
-        
-        // Trata a conversão de formato de moeda brasileiro (vírgula decimal)
-        // Substitui o ponto (separador de milhar) por nada e a vírgula (separador decimal) por ponto
-        // Ex: "10.000,50" -> "10000.50"
         cellText = cellText.split('.').join('').replace(',', '.'); 
         
-        // Coloca aspas em torno do valor (necessário para Data e Hora, e protege números)
         rowData.push(`"${cellText}"`);
     }
     csv.push(rowData.join(";"));
