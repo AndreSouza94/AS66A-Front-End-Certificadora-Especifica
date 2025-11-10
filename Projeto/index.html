@@ -5,35 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Calculadora Renda Fixa</title>
   <link rel="stylesheet" href="./CSS/styles.css">
+  <link rel="stylesheet" href="./CSS/faq.css"> </head>
 </head>
 <body>
     <div class="main-content">
-  <!-- HEADER -->
+
   <header>
     <nav>
-    <a class="btn-header" href="index.html">📊 Calculadora Renda Fixa</a>
+    <a class="logo" href="index.html">💰 InvestCalc</a>
     </nav>
 
-    <nav>
-      <a href="#">Benefícios</a>
-      <a href="#">Calculadora</a>
-      <a href="#">Comparação</a>
-    </nav>
+  <nav>
 
     <div class="header-actions">
-      <a class="acesso-link" href="login.html">Acesso</a>
-      <a href="#" class="btn-header">Calcular Agora</a>
+
     </div>
   </header>
 
-  <!-- HERO -->
+
   <section class="hero">
     <div class="hero-text">
       <h2>Simule seus <span>Investimentos</span> com Precisão</h2>
       <p>A ferramenta mais completa para calcular rendimentos de renda fixa. Compare cenários, analise impostos e tome decisões inteligentes.</p>
       <div class="hero-buttons">
-        <button class="btn-primary">Começar Simulação</button>
-        <button class="btn-primary">Saiba Mais</button>
+        <button class="btn-primary" onclick="window.location.href='calculadora.html'">Começar Simulação</button>
       </div>
     </div>
 
@@ -48,7 +43,7 @@
     </div>
   </section>
 
-  <!-- BENEFÍCIOS -->
+  
   <section class="benefits">
     <h2>Por que usar nossa calculadora?</h2>
     <p>Desenvolvida para investidores que buscam precisão e clareza nas simulações</p>
@@ -61,7 +56,7 @@
     </div>
   </section>
 <hr>
-  <!-- TIPOS DE RENDA FIXA -->
+
   <section class="types">
     <div class="left">
       <h2>Simule todos os tipos de <span>Renda Fixa</span></h2>
@@ -88,16 +83,97 @@
     </div>
   </section>
 
-  <!-- CTA FINAL -->
-  <section class="cta-final">
-    <h2>Pronto para otimizar seus <span>investimentos?</span></h2>
-    <p>Comece agora mesmo a simular seus investimentos e descubra o potencial dos seus recursos.</p>
-    <div class="buttons">
-      <button class="btn-primary">Comparar Cenários</button>
-    </div>
-  </section>
+
+<section class="cta-final">
+  <h2>Pronto para otimizar seus <span>investimentos?</span></h2>
+<p>Comece agora mesmo a simular seus investimentos e descubra o potencial dos seus recursos.</p>
+<div class="buttons">
+ <button class="btn-primary" onclick="window.location.href='calculadora.html'">Usar Calculadora</button>
+ <a href="beneficios.html" class="btn-secondary">beneficios</a>  <a href="#faq-section" class="btn-secondary link-faq">
+Dúvidas? Acesse o FAQ
+</a>
 </div>
-  <!-- FOOTER -->
+</section>
+    
+</div> <section id="faq-section" class="faq-container">
+    <h1 class="faq-titulo">Dúvidas Frequentes (FAQ)</h1>
+    <p class="faq-subtitulo">Informações sobre o uso da ferramenta, segurança de dados e metodologia de cálculo.</p>
+
+    <section class="faq-category">
+        <h2>1. Como Usar a Ferramenta?</h2>
+
+        <div class="accordion-item">
+            <button class="accordion-header">
+                Como faço para começar uma simulação?
+                <span class="icon">+</span>
+            </button>
+            <div class="accordion-content">
+                <p>Você pode começar a simulação clicando no botão "Começar Simulação" na página inicial ou acessando a aba "Calculadora" no menu superior. Basta preencher os campos de Valor Inicial, Prazo (em meses) e Rentabilidade (% do CDI).</p>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <button class="accordion-header">
+                Quais tipos de Renda Fixa posso simular?
+                <span class="icon">+</span>
+            </button>
+            <div class="accordion-content">
+                <p>A ferramenta suporta CDB (Tributado), LCI/LCA (Isento de IR) e Tesouro Direto. Você seleciona o tipo desejado no campo "Tipo de Investimento" na tela da calculadora.</p>
+            </div>
+        </div>
+        </section>
+
+
+    <section class="faq-category">
+        <h2>2. Precisão e Metodologia</h2>
+
+        <div class="accordion-item">
+            <button class="accordion-header">
+                Os resultados exibidos são líquidos ou brutos?
+                <span class="icon">+</span>
+            </button>
+            <div class="accordion-content">
+                <p>Os resultados finais (Valor Final e Rendimento) são sempre **líquidos**, ou seja, já descontamos o Imposto de Renda (IRRF) e o IOF (se aplicável), conforme a tabela regressiva e as regras da Receita Federal. O valor bruto também é exibido para comparação.</p>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <button class="accordion-header">
+                A calculadora considera juros compostos (juros sobre juros)?
+                <span class="icon">+</span>
+            </button>
+            <div class="accordion-content">
+                <p>Sim, todos os cálculos de Renda Fixa (CDB, Tesouro, LCI/LCA) utilizam a metodologia de juros compostos, que é o padrão do mercado financeiro brasileiro.</p>
+            </div>
+        </div>
+        </section>
+
+    <section class="faq-category">
+        <h2>3. Segurança e Dados</h2>
+        
+        <div class="accordion-item">
+            <button class="accordion-header">
+                Meus dados pessoais estão seguros na plataforma?
+                <span class="icon">+</span>
+            </button>
+            <div class="accordion-content">
+                <p>Sim. Utilizamos criptografia **Bcrypt.js** para armazenar suas senhas e o token **JWT** para autenticação. Seus dados são armazenados de forma segura no nosso Banco de Dados **MongoDB** e não são compartilhados com terceiros.</p>
+            </div>
+        </div>
+
+         <div class="accordion-item">
+            <button class="accordion-header">
+                Por que preciso informar meu CPF?
+                <span class="icon">+</span>
+            </button>
+            <div class="accordion-content">
+                <p>O CPF é coletado apenas para fins de **identificação única** da sua conta e para garantir que o sistema aplique corretamente as regras de tributação (como o Imposto de Renda) em suas simulações, simulando o regime de Pessoa Física.</p>
+            </div>
+        </div>
+        </section>
+</section>
+
+
   <footer>
   <div class="footer-content">
     <div>
@@ -105,13 +181,13 @@
       <p>Ferramenta educativa para simulação de investimentos</p>
     </div>
     <div class="footer-links">
-      <a href="#">Termos de Uso</a>
-      <a href="#">Política de Privacidade</a>
+      <a href="termos.html">Termos de Uso</a>
+      <a href="politica.html">Política de Privacidade</a>
     </div>
   </div>
   <p class="copy">© 2025 Calculadora Renda Fixa. Ferramenta educativa para simulação de investimentos.</p>
 </footer>
-
-
-</body>
+    
+<script src="./JS/auth.js"></script> 
+<script src="./JS/faq.js"></script> </body>
 </html>
