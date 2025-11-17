@@ -55,17 +55,16 @@ Com isso, fornece uma visão detalhada do retorno do investimento.
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## 🛠️ Tecnologias e Frameworks Utilizados
 
 * **HTML5** – Estruturação das páginas.
-* **CSS3** – Estilização e design responsivo, incluindo Layout **Grid** para o Dashboard.
-  * `global.css` → estilos globais 
-  * `landing-page.css` → estilos da Landing Page 
-  * `styles.css` / `calculadora.css` → estilos específicos da Calculadora.
-* **JavaScript (ES6+)** – Lógica interativa, simulação e gerenciamento local de histórico (`localStorage`).
-  * **Chart.js** (Biblioteca externa) – Utilizada para gerar o gráfico de evolução do patrimônio.
-  * `api.js` → comunicação com a API (via fetch ou Axios) 
-  * `main.js` / `calculadora.js` → interações, simulações, resultados e controle do gráfico.
+* **CSS3** – Estilização e design responsivo, utilizando Layout **Grid** para o Dashboard.
+  * **Bootstrap 5** (Componentes e Utilitários CSS)
+  * **Font Awesome** (Ícones)
+* **JavaScript (ES6+)** – Lógica interativa, simulação e gerenciamento local de histórico.
+  * **Chart.js** (Biblioteca) – Utilizada para gerar o gráfico de evolução do patrimônio.
+  * **Axios** (Biblioteca) – Cliente HTTP para comunicação com o Backend (Autenticação).
+  * **JavaScript Puro (Vanilla JS)** – Lógica principal de cálculo (`calculadora.js`) e manipulação do DOM.
 
 🔎 **Observação:** Os cálculos financeiros de maior complexidade (juros, IRRF, IOF e taxas) são idealmente processados no backend, mas o frontend simula a lógica para demonstração.
 
@@ -77,21 +76,21 @@ Com isso, fornece uma visão detalhada do retorno do investimento.
 .
 ├── .gitignore
 ├── README.md
-├── frontend/
+├── (Páginas HTML - Raiz)
 │   ├── index.html          # Página principal (Landing Page)
-│   ├── calculadora.html    # Página da Calculadora (Com Dashboard e Gráfico)
-│   ├── comparacao.html     # Página de Comparação
+│   ├── calculadora.html    # Página da Calculadora (Dashboard)
 │   ├── historico.html      # Página de Histórico de Simulações
-│   └── assets/
-│       ├── css/
-│       │   ├── global.css
-│       │   ├── landing-page.css
-│       │   └── styles.css
-│       └── js/
-│           ├── api.js
-│           └── main.js
-├── backend/                # Diretório do backend (quando aplicável)
-└── .env                    # Variáveis de ambiente (backend)
+│   ├── login.html          # Tela de Login/Cadastro
+│   └── ... (termos.html, politica.html, etc.)
+├── CSS/
+│   ├── calculadora.css     # Estilos da Calculadora (Layout Grid, Cards)
+│   ├── styles.css          # Estilos Globais e Landing Page
+│   └── ... (login.css, faq.css, etc.)
+└── JS/
+    ├── calculadora.js      # Lógica da Calculadora (Cálculo, Gráfico, Histórico)
+    ├── historico.js        # Lógica de renderização/remoção do Histórico
+    ├── auth.js             # Lógica de autenticação do Header
+    └── ... (login.js, export.js, etc.)
 ```
 ---
 ## 🚀 Como Executar o Projeto
