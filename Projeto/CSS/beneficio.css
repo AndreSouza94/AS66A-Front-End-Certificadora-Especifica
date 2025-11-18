@@ -1,42 +1,23 @@
-/* ============================== */
-/* IDENTIDADE VISUAL – TEMA LARANJA (#ff8c32) */
-/* ============================== */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;600&family=Poppins:wght@600;700&family=Roboto:wght@400;500;700&display=swap');
+
+:root {
+  --primary: #0f1f3d;
+  --secondary: #143158;
+  --highlight: #ff8c32;
+  --text: #1d1d1f;
+  --muted: #5a6170;
+  --background: #ffffff;
+  --border: #e1e6f0;
+  --heading-font: 'Poppins', 'Montserrat', sans-serif;
+  --body-font: 'Roboto', 'Open Sans', sans-serif;
+}
 
 body {
   margin: 0;
-  font-family: Arial, Helvetica, sans-serif;
-  background: linear-gradient(135deg, #000 0%, #1a0f00 100%);
-  color: #ffffff;
-}
-
-/* NAV */
-header {
-  padding: 25px 0;
-  background: #000;
-  border-bottom: 1px solid #ff8c32;
-}
-
-.menu-central {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-}
-
-.nav-btn {
-  color: #ff8c32;
-  text-decoration: none;
-  padding: 12px 28px;
-  font-size: 18px;
-  border: 2px solid #ff8c32;
-  border-radius: 10px;
-  background: transparent;
-  transition: 0.3s;
-  font-weight: bold;
-}
-
-.nav-btn:hover {
-  background: #ff8c32;
-  color: #000;
+  font-family: var(--body-font);
+  background: linear-gradient(180deg, rgba(246, 248, 252, 0.92) 0%, rgba(255, 255, 255, 0.96) 100%),
+    url('../image/back.jpg') center/cover no-repeat;
+  color: var(--text);
 }
 
 /* MAIN */
@@ -44,6 +25,9 @@ main {
   max-width: 1150px;
   margin: 40px auto;
   padding: 20px;
+  background: #f6f8fc;
+  border-radius: 12px;
+  box-shadow: 0 14px 32px rgba(15, 31, 61, 0.06);
 }
 
 /* BENEFÍCIOS */
@@ -54,23 +38,24 @@ main {
 }
 
 .card {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid #ff8c32;
+  background: #ffffff;
+  border: 1px solid var(--border);
   border-radius: 15px;
   padding: 25px;
   text-align: left;
   transition: 0.3s;
-  box-shadow: 0 0 12px rgba(255, 140, 50, 0.25);
+  box-shadow: 0 12px 30px rgba(15, 31, 61, 0.06);
 }
 
 .card:hover {
   transform: translateY(-6px);
-  box-shadow: 0 0 20px rgba(255, 140, 50, 0.5);
+  box-shadow: 0 16px 36px rgba(15, 31, 61, 0.12);
 }
 
 .card h3 {
-  color: #ff8c32;
+  color: var(--primary);
   margin-top: 0;
+  font-family: var(--heading-font);
 }
 
 /* COMPARAÇÃO */
@@ -80,8 +65,9 @@ main {
 }
 
 .comparacao h2 {
-  color: #ff8c32;
+  color: var(--primary);
   font-size: 32px;
+  font-family: var(--heading-font);
 }
 
 .comparacao-cards {
@@ -97,8 +83,8 @@ main {
 }
 
 .destaque {
-  border: 2px solid #ff8c32;
-  box-shadow: 0 0 20px rgba(255, 140, 50, 0.45);
+  border: 2px solid var(--primary);
+  box-shadow: 0 16px 36px rgba(15, 31, 61, 0.12);
 }
 
 /* CTA */
@@ -108,8 +94,9 @@ main {
 }
 
 .cta h2 {
-  color: #ff8c32;
+  color: var(--primary);
   font-size: 30px;
+  font-family: var(--heading-font);
 }
 
 .btn {
@@ -118,15 +105,16 @@ main {
   border: none;
   font-size: 20px;
   cursor: pointer;
-  background: #ff8c32;
-  color: #000;
-  font-weight: bold;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  color: #ffffff;
+  font-weight: 700;
   transition: 0.3s;
+  font-family: var(--heading-font);
 }
 
 .btn:hover {
-  background: #ffa867;
-  box-shadow: 0 0 18px rgba(255, 168, 103, 0.7);
+  background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+  box-shadow: 0 18px 38px rgba(255, 140, 50, 0.22);
 }
 
 /* FOOTER */
@@ -135,9 +123,9 @@ footer {
   padding: 18px;
   text-align: center;
   font-size: 14px;
-  color: #ffd3b8;
-  background: #000;
-  border-top: 1px solid #ff8c32;
+  color: var(--muted);
+  background: #f7fbf8;
+  border-top: 1px solid var(--border);
 }
 
 

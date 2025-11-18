@@ -258,7 +258,9 @@ const inputAporteMensal = document.getElementById("aporte-mensal");
 const checkAporte = document.getElementById("check-aporte");
 const grupoAporte = document.getElementById("grupo-aporte");
 const taxasContainer = document.getElementById("taxas-container");
-const addHistoryBtn = document.getElementById("addHistoryBtn"); 
+const addHistoryBtn = document.getElementById("addHistoryBtn");
+const historyWrapper = document.getElementById("history-wrapper");
+const layoutWrapper = document.querySelector('.side-by-side-layout');
 
 
 
@@ -285,7 +287,8 @@ form.addEventListener("submit", (e) => {
     e.preventDefault();
     
     lastHistoryData = null;
-    addHistoryBtn.classList.add('hidden'); 
+    addHistoryBtn.classList.add('hidden');
+    historyWrapper?.classList.add('hidden');
     chartSection.classList.add('hidden'); // Oculta o gráfico antes do cálculo
 
  
@@ -334,6 +337,7 @@ form.addEventListener("submit", (e) => {
 
     // 7. Exibe o botão de salvar 
     addHistoryBtn.classList.remove('hidden');
+    historyWrapper?.classList.remove('hidden');
 });
 
 // Event Listener para o botão "Adicionar ao Histórico" 
@@ -357,6 +361,7 @@ if (addHistoryBtn) {
             if (saveSimulationToHistory(dataToSave)) {
                 alert(`Simulação de ${lastHistoryData.tempoDias} dias salva no Histórico com sucesso!`);
                 addHistoryBtn.classList.add('hidden');
+                historyWrapper?.classList.add('hidden');
             }
         } else {
             alert("Nenhum resultado de simulação para salvar. Calcule primeiro.");
@@ -380,7 +385,11 @@ function renderResultado(r) {
     document.getElementById("res-liquido").textContent = formatCurrency(r.valorFinalLiquido);
     document.getElementById("res-lucro-liquido").textContent = formatCurrency(r.lucroLiquido);
     document.getElementById("res-percentual").textContent = formatPercent(r.percentual);
-    
+
+    if (layoutWrapper) {
+        layoutWrapper.classList.add('show-results');
+    }
+
     resultadoContainer.classList.remove('hidden');
     resultadoContainer.scrollIntoView({ behavior: "smooth" });
 }
@@ -420,14 +429,14 @@ function renderChart(seriesData) {
                     label: 'Patrimônio Total (Valor de Mercado)',
                     data: patrimonio,
                     borderColor: '#ffa533', 
-                    backgroundColor: 'rgba(255, 165, 51, 0.2)',
+                    backgroundColor: 'rgba(255, 165, 51, 0.22)',
                     fill: true,
                     tension: 0.2
                 }, {
                     label: 'Total Aportado (Capital Investido)',
                     data: aportado,
-                    borderColor: '#007bff', 
-                    backgroundColor: 'rgba(0, 123, 255, 0.2)',
+                    borderColor: '#0f1f3d', 
+                    backgroundColor: 'rgba(15, 31, 61, 0.08)',
                     fill: false,
                     tension: 0.2
                 }]
@@ -441,38 +450,38 @@ function renderChart(seriesData) {
                         title: {
                             display: true,
                             text: 'Valor (R$)',
-                            color: '#ccc'
+                            color: '#1d1d1f'
                         },
                         ticks: {
-                            color: '#ccc',
+                            color: '#1d1d1f',
                             callback: function(value) {
                                 return 'R$ ' + value.toLocaleString('pt-BR');
                             }
                         },
                         grid: {
-                            color: 'rgba(255, 255, 255, 0.1)',
-                            borderColor: 'rgba(255, 255, 255, 0.1)'
+                            color: 'rgba(15, 31, 61, 0.08)',
+                            borderColor: 'rgba(15, 31, 61, 0.15)'
                         }
                     },
                     x: {
                         title: {
                             display: true,
                             text: 'Período',
-                            color: '#ccc'
+                            color: '#1d1d1f'
                         },
                         ticks: {
-                            color: '#ccc'
+                            color: '#1d1d1f'
                         },
                         grid: {
-                            color: 'rgba(255, 255, 255, 0.1)',
-                            borderColor: 'rgba(255, 255, 255, 0.1)'
+                            color: 'rgba(15, 31, 61, 0.05)',
+                            borderColor: 'rgba(15, 31, 61, 0.1)'
                         }
                     }
                 },
                 plugins: {
                     legend: {
                         labels: {
-                            color: '#fff' 
+                            color: '#1d1d1f'
                         }
                     },
                     tooltip: {

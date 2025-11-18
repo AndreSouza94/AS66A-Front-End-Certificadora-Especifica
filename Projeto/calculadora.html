@@ -4,19 +4,30 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Calculadora de Investimentos</title>
-  <link rel="stylesheet" href="./CSS/calculadora.css" />
+  <link rel="stylesheet" href="./CSS/calculadora.css" />
+  <link rel="stylesheet" href="./CSS/styles.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script> 
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
-<body>
+<body class="calc-page">
 
-  <header class="header">
-    <div class="logo">💰 InvestCalc</div>
-    <a href="historico.html" target="_blank" class="btn-historico">Histórico →</a>
-    <a href="index.html" class="btn-voltar">← Voltar</a>
-  </header>
+  <header class="site-header">
+    <div class="brand-area">
+      <a class="logo" href="index.html">
+        <img src="./image/logo-full.svg" alt="Calculadora Renda Fixa">
+      </a>
+    </div>
+
+    <nav class="main-nav">
+      <a href="index.html">Início</a>
+      <a href="beneficios.html">Benefícios</a>
+      <a href="calculadora.html">Calculadora</a>
+      <a href="index.html#faq-section">FAQ</a>
+      <a class="btn-header" href="login.html">Acessar Conta</a>
+    </nav>
+  </header>
 
   <main class="container">
     
@@ -27,20 +38,6 @@
       </section>
     
     <div class="side-by-side-layout">
-
-        <div class="results-column">
-            <section class="resultado-container hidden" id="resultado-container">
-                <h2 class="secao-titulo">Resultados</h2>
-                <div class="cards-resultado-detalhe">
-                    <div class="card-resultado"><div class="label">Valor Final Bruto</div><div class="valor" id="res-bruto">R$ 0,00</div></div>
-                    <div class="card-resultado"><div class="label">Rendimento Bruto</div><div class="valor" id="res-rendimento-bruto">R$ 0,00</div></div>
-                    <div class="card-resultado"><div class="label">Imposto (IR/IOF)</div><div class="valor" id="res-imposto">R$ 0,00</div></div>
-                    <div class="card-resultado"><div class="label">Valor Final Líquido</div><div class="valor" id="res-liquido">R$ 0,00</div></div>
-                    <div class="card-resultado"><div class="label">Lucro Líquido</div><div class="valor" id="res-lucro-liquido">R$ 0,00</div></div>
-                    <div class="card-resultado"><div class="label">Ganho/Perda (%)</div><div class="valor" id="res-percentual">0,00%</div></div>
-                </div>
-            </section>
-        </div>
 
         <div class="form-column">
             <section class="form-container">
@@ -71,13 +68,13 @@
                             <input type="date" id="data-final" required />
                         </div>
                     </div>
-                    
+
                     <div class="form-grupo checkbox-grupo">
                         <input type="checkbox" id="check-aporte">
                         <label for="check-aporte" class="checkbox-label">Incluir Aporte para Reinvestimento Mensal?</label>
                     </div>
 
-                    <div class="form-grupo hidden" id="grupo-aporte"> 
+                    <div class="form-grupo hidden" id="grupo-aporte">
                         <label>Aporte para Reinvestimento Mensal (R$)</label>
                         <input type="text" id="aporte-mensal" placeholder="Valor do aporte" value="0,00" disabled />
                     </div>
@@ -89,14 +86,34 @@
 
                     <button type="submit" class="btn-calcular">Calcular</button>
                 </form>
-                
+
             </section>
-            
-            <button id="addHistoryBtn" class="btn-calcular hidden" style="margin-top: 15px;">
-                Adicionar ao Histórico
-            </button>
         </div>
 
+        <div class="results-column">
+            <section class="resultado-container hidden" id="resultado-container">
+                <h2 class="secao-titulo">Resultados</h2>
+                <div class="cards-resultado-detalhe">
+                    <div class="card-resultado"><div class="label">Valor Final Bruto</div><div class="valor" id="res-bruto">R$ 0,00</div></div>
+                    <div class="card-resultado"><div class="label">Rendimento Bruto</div><div class="valor" id="res-rendimento-bruto">R$ 0,00</div></div>
+                    <div class="card-resultado"><div class="label">Imposto (IR/IOF)</div><div class="valor" id="res-imposto">R$ 0,00</div></div>
+                    <div class="card-resultado"><div class="label">Valor Final Líquido</div><div class="valor" id="res-liquido">R$ 0,00</div></div>
+                    <div class="card-resultado"><div class="label">Lucro Líquido</div><div class="valor" id="res-lucro-liquido">R$ 0,00</div></div>
+                    <div class="card-resultado"><div class="label">Ganho/Perda (%)</div><div class="valor" id="res-percentual">0,00%</div></div>
+                </div>
+            </section>
+        </div>
+
+    </div>
+
+    <div class="history-action hidden" id="history-wrapper">
+        <button id="addHistoryBtn" class="btn-calcular">
+            Adicionar ao Histórico
+        </button>
+    </div>
+
+    <div class="history-navigation">
+        <a href="historico.html" class="btn-history-link">Ir para Histórico</a>
     </div>
     <section class="chart-section hidden" id="chart-section">
         <h2 class="secao-titulo" style="margin-top: 40px;">Evolução do Patrimônio vs. Aportes</h2>
