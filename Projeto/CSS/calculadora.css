@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;600&family=Poppins:wght@600;700&family=Roboto:wght@400;500;700&display=swap');
+
 /* ===== RESET BÁSICO ===== */
 
 * {
@@ -8,109 +10,44 @@
 
   box-sizing: border-box;
 
-  font-family: 'Inter', sans-serif;
+  font-family: 'Roboto', 'Open Sans', sans-serif;
 
 }
 
 
 
-body {
+:root {
 
-  background: #0d0d0f;
+  --primary: #0f1f3d;
 
-  color: #fff;
+  --secondary: #143158;
 
-  padding-bottom: 50px;
+  --highlight: #ff8c32;
 
-}
+  --text: #1d1d1f;
 
+  --muted: #5a6170;
 
+  --surface: #f3f5fa;
 
-/* ===== HEADER ===== */
+  --card: #ffffff;
 
-.header {
+  --border: #e1e6f0;
 
-  width: 100%;
-
-  padding: 20px 40px;
-
-  display: flex;
-
-  justify-content: space-between;
-
-  align-items: center;
+  --heading-font: 'Poppins', 'Montserrat', sans-serif;
 
 }
 
 
 
-.logo {
+body.calc-page {
 
-  font-size: 20px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.82) 0%, rgba(255, 255, 255, 0.9) 100%),
+    url('../image/back.jpg') center/cover no-repeat;
 
-  font-weight: 600;
+  color: var(--text);
 
-  color: #ffa533;
-
-}
-
-
-
-.btn-voltar {
-
-  color: #ffa533;
-
-  font-size: 14px;
-
-  text-decoration: none;
-
-  border: 1px solid #ffa533;
-
-  padding: 6px 14px;
-
-  border-radius: 6px;
-
-  transition: 0.3s ease;
-
-}
-
-
-
-.btn-voltar:hover {
-
-  background: #ffa533;
-
-  color: #000;
-
-}
-
-
-
-.btn-historico {
-
-  color: #ffa533;
-
-  font-size: 14px;
-
-  text-decoration: none;
-
-  border: 1px solid #ffa533;
-
-  padding: 6px 14px;
-
-  border-radius: 6px;
-
-  transition: 0.3s ease;
-
-}
-
-
-
-.btn-historico:hover {
-
-  background: #ffa533;
-
-  color: #000;
+  padding: 72px 0 50px;
 
 }
 
@@ -122,13 +59,17 @@ body {
 
   width: 100%;
 
-  max-width: 960px;
+  max-width: 1180px;
 
-  margin: 0 auto;
+  margin: 12px auto 0;
 
   padding: 20px;
 
   text-align: center;
+
+  background: var(--surface);
+
+  border-radius: 12px;
 
 }
 
@@ -136,19 +77,15 @@ body {
 
 .titulo {
 
-  font-size: 28px;
+  font-size: 34px;
 
-  font-weight: 600;
+  font-weight: 700;
 
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 
-  background: linear-gradient(90deg, #ffa533, #ffd38a);
+  color: var(--highlight);
 
-  background-clip: text;
-
-  -webkit-background-clip: text;
-
-  -webkit-text-fill-color: transparent;
+  font-family: var(--heading-font);
 
 }
 
@@ -156,11 +93,13 @@ body {
 
 .subtitulo {
 
-  font-size: 14px;
+  font-size: 16px;
 
-  color: #aaa;
+  color: var(--highlight);
 
-  margin-bottom: 30px;
+  font-weight: 600;
+
+  margin-bottom: 34px;
 
 }
 
@@ -184,15 +123,13 @@ body {
 
 .card-taxa {
 
-  background: rgba(255,255,255,0.03);
+  background: #ffffff;
 
   padding: 14px 18px;
 
   border-radius: 10px;
 
-  backdrop-filter: blur(6px);
-
-  border: 1px solid rgba(255,255,255,0.06);
+  border: 1px solid var(--border);
 
   width: 120px;
 
@@ -204,7 +141,7 @@ body {
 
 .card-taxa:hover {
 
-  border-color: #ffa533;
+  border-color: var(--primary);
 
 }
 
@@ -214,7 +151,7 @@ body {
 
   font-size: 12px;
 
-  color: #aaa;
+  color: var(--muted);
 
   margin-bottom: 4px;
 
@@ -234,19 +171,14 @@ body {
 
 /* ===== GRID PRINCIPAL (LADO A LADO) ===== */
 
-.side-by-side-layout {
-
-    display: grid;
-
-    grid-template-columns: 1fr; /* Padrão Mobile: 1 coluna */
-
-    gap: 20px;
-
-    margin-top: 30px;
-
-    align-items: start; /* Alinha o topo dos cards */
-
-}
+ .side-by-side-layout {
+     display: grid;
+     grid-template-columns: 1fr; /* Padrão Mobile: 1 coluna */
+     gap: 24px;
+     margin-top: 36px;
+     align-items: stretch; /* Alinha o topo dos cards */
+     justify-items: center;
+ }
 
 
 
@@ -256,27 +188,45 @@ body {
 
         /* Coluna Esquerda (Formulário) : Coluna Direita (Resultados) */
 
-        grid-template-columns: 0.9fr 1.6fr;
+        grid-template-columns: 1fr;
 
     }
 
-}
 
 
-
-.form-column {
-
-  order: 1;
+     .side-by-side-layout.show-results {
+         grid-template-columns: minmax(420px, 0.95fr) minmax(680px, 1.25fr);
+     }
 
 }
 
 
 
-.results-column {
+  .form-column,
+  .results-column {
 
-  order: 2;
+    order: 1;
 
-}
+    display: flex;
+
+    justify-content: center;
+
+    align-items: stretch;
+
+    transition: transform 0.6s ease;
+
+  }
+
+  .results-column { order: 2; }
+
+  .side-by-side-layout.show-results .form-column { transform: translateX(-14px); }
+
+  .side-by-side-layout.show-results .form-column,
+  .side-by-side-layout.show-results .results-column {
+
+      align-self: stretch;
+
+  }
 
 
 
@@ -285,17 +235,27 @@ body {
 
 .form-container {
 
-  background: rgba(255,255,255,0.04);
+  background: #ffffff;
 
   padding: 20px;
 
   border-radius: 14px;
 
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid var(--border);
 
   margin-bottom: 0;
 
   text-align: left; /* Garante que o texto dentro do formulário não seja centralizado */
+
+  max-width: 500px;
+
+  width: 100%;
+
+  height: 100%;
+
+  display: flex;
+
+  flex-direction: column;
 
 }
 
@@ -303,13 +263,13 @@ body {
 
 .secao-titulo {
 
-  font-size: 16px;
+  font-size: 17px;
 
   margin-bottom: 20px;
 
-  font-weight: 600;
+  font-weight: 700;
 
-  color: #ffa533;
+  color: var(--highlight);
 
   text-align: center; /* Centraliza títulos dentro dos cards */
 
@@ -344,7 +304,7 @@ body {
 .form-grupo-datas label {
   display: block;
   font-size: 0.9rem;
-  color: #333;
+  color: var(--text);
   margin-bottom: 6px;
 }
 
@@ -352,9 +312,11 @@ body {
   width: 100%;
   padding: 10px;
   font-size: 0.95rem;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border);
   border-radius: 6px;
   box-sizing: border-box;
+  background: #ffffff;
+  color: var(--text);
 }
 
 
@@ -378,7 +340,7 @@ body {
 
   font-size: 14px;
 
-  color: #ccc;
+  color: var(--text);
 
 }
 
@@ -392,11 +354,11 @@ input, select {
 
   border-radius: 8px;
 
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid var(--border);
 
-  background: rgba(255,255,255,0.05);
+  background: #ffffff;
 
-  color: #fff;
+  color: var(--text);
 
   -webkit-appearance: none;
 
@@ -426,9 +388,9 @@ select {
 
 select option {
 
-    color: #fff;
+    color: var(--text);
 
-    background: #222;
+    background: #ffffff;
 
     padding: 8px;
 
@@ -440,9 +402,9 @@ select option {
 
 select option:checked {
 
-    background-color: #ffa533;
+    background-color: #e6f7ea;
 
-    color: #000;
+    color: var(--text);
 
 }
 
@@ -452,9 +414,9 @@ select option:checked {
 
 select option:hover {
 
-    background-color: #ff8a05;
+    background-color: #e6f7ea;
 
-    color: #000;
+    color: var(--text);
 
 }
 
@@ -476,9 +438,9 @@ input:focus, select:focus {
 
   outline: none;
 
-  border-color: #ffa533;
+  border-color: var(--primary);
 
-  background: rgba(255,255,255,0.08);
+  background: #ffffff;
 
 }
 
@@ -490,9 +452,9 @@ input:focus, select:focus {
 
     cursor: not-allowed;
 
-    background-color: rgba(255,255,255,0.02);
+    background-color: #f0f4f2;
 
-    border-color: rgba(255,255,255,0.05);
+    border-color: var(--border);
 
     color: #888;
 
@@ -515,16 +477,16 @@ input:focus, select:focus {
     height: 18px;
     margin-right: 10px;
     cursor: pointer;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.2);
+    background: #ffffff;
+    border: 1px solid var(--border);
     transition: 0.3s ease;
 }
 
 /* Estilo para o checkbox marcado */
 .checkbox-grupo input[type="checkbox"]:checked {
 
-    background-color: #ffa533; /* Cor de fundo quando o checkbox estiver marcado */
-    border-color: #ffa533;    /* Cor da borda quando marcado */
+    background-color: var(--primary);
+    border-color: var(--primary);
 }
 
 /* Estilo para o texto ao lado do checkbox */
@@ -532,14 +494,14 @@ input:focus, select:focus {
 
     margin-bottom: 0 !important;
     font-size: 15px !important;
-    color: #ddd !important;
+    color: var(--text) !important;
     cursor: pointer;
 }
 
 /* Estilo do checkbox quando está selecionado e o usuário passa o mouse sobre ele */
 .checkbox-grupo input[type="checkbox"]:hover {
 
-    border-color: #ffa533; /* Cor da borda ao passar o mouse */
+    border-color: var(--primary);
 }
 
 
@@ -549,7 +511,7 @@ input:focus, select:focus {
 
     font-size: 15px !important;
 
-    color: #ddd !important;
+    color: var(--text) !important;
 
     cursor: pointer;
 
@@ -571,7 +533,7 @@ input:focus, select:focus {
 
 .btn-calcular {
 
-  background: linear-gradient(90deg, #ffa533, #ff8a05);
+  background: var(--highlight);
 
   border: none;
 
@@ -583,7 +545,7 @@ input:focus, select:focus {
 
   font-weight: 600;
 
-  color: #000;
+  color: #ffffff;
 
   transition: 0.3s;
 
@@ -591,11 +553,71 @@ input:focus, select:focus {
 
 }
 
+.history-action {
+
+  max-width: 520px;
+
+  margin: 10px auto 0;
+
+  display: flex;
+
+  justify-content: center;
+
+  gap: 12px;
+
+}
+
+.history-navigation {
+
+  max-width: 520px;
+
+  margin: 12px auto 0;
+
+  display: flex;
+
+  justify-content: center;
+
+}
+
+.btn-history-link {
+
+  display: block;
+
+  width: 100%;
+
+  padding: 12px 20px;
+
+  border-radius: 8px;
+
+  border: 1px solid var(--highlight);
+
+  background: #ffffff;
+
+  color: var(--highlight);
+
+  font-weight: 600;
+
+  text-decoration: none;
+
+  transition: 0.3s ease;
+
+  text-align: center;
+
+}
+
+.btn-history-link:hover {
+
+  background: #fff7ec;
+
+  color: var(--primary);
+
+}
+
 
 
 .btn-calcular:hover {
 
-  filter: brightness(1.1);
+  filter: brightness(1.05);
 
 }
 
@@ -609,13 +631,23 @@ input:focus, select:focus {
 
   /* Aplica o mesmo estilo de card para resultados e gráfico */
 
-  background: rgba(255,255,255,0.04);
+  background: #ffffff;
 
   padding: 20px;
 
   border-radius: 14px;
 
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid var(--border);
+
+  max-width: 760px;
+
+  width: 100%;
+
+  height: 100%;
+
+  display: flex;
+
+  flex-direction: column;
 
 }
 
@@ -647,13 +679,13 @@ input:focus, select:focus {
 
 .card-resultado {
 
-  background: rgba(255,255,255,0.04);
+  background: #ffffff;
 
   padding: 16px;
 
   border-radius: 12px;
 
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid var(--border);
 
   transition: 0.2s;
 
@@ -665,7 +697,7 @@ input:focus, select:focus {
 
 .card-resultado:hover {
 
-  border-color: #ffa533;
+  border-color: var(--primary);
 
 }
 
@@ -675,7 +707,7 @@ input:focus, select:focus {
 
   font-size: 12px;
 
-  color: #ccc;
+  color: var(--muted);
 
   white-space: nowrap;
 
@@ -691,7 +723,7 @@ input:focus, select:focus {
 
   margin-top: 6px;
 
-  color: #ffa533;
+  color: var(--primary);
 
 }
 
@@ -711,15 +743,21 @@ input:focus, select:focus {
 
 .chart-section .form-container {
 
-    background: rgba(255,255,255,0.04);
+     background: #ffffff;
 
-    padding: 20px;
+     padding: 20px;
 
-    border-radius: 14px;
+     border-radius: 14px;
 
-    border: 1px solid rgba(255,255,255,0.08);
+     border: 1px solid var(--border);
 
-}
+  max-width: 900px;
+
+  width: 100%;
+
+  margin: 0 auto;
+
+  }
 
 
 
@@ -728,5 +766,13 @@ input:focus, select:focus {
     margin-top: 0 !important;
 
     margin-bottom: 20px;
+
+}
+
+.chart-section canvas {
+
+    width: 100% !important;
+
+    height: 420px !important;
 
 }

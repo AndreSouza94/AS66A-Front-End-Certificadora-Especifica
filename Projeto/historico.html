@@ -6,47 +6,78 @@
   <title>Histórico de Simulações</title>
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="./CSS/styles.css">
-
 </head>
-<body>
+<body class="historico-page">
 
-<div class="container mt-5">
-  <h2 class="text-center mb-4 historico-titulo">Histórico de Simulações</h2> 
+  <header class="calc-header slim">
+    <div class="calc-brand">
+      <a href="index.html">
+        <img src="./image/logo-full.svg" alt="Calculadora Renda Fixa">
+      </a>
+    </div>
+    <div class="header-actions">
+      <a href="calculadora.html" class="btn-voltar">Voltar para a Calculadora</a>
+    </div>
+  </header>
 
-  <div class="table-responsive">
-    <table class="table table-dark table-striped">
-      <thead>
-        <tr>
-          <th><input type="checkbox" id="selectAll" title="Selecionar Todos"></th> 
-          <th class="text-left">Data e Hora</th>
-          <th class="text-center">Tipo</th>
-          <th class="text-right">V. Inicial</th>
-          <th class="text-center">Tempo (Dias)</th>
-          <th class="text-center">Taxa de Juros ao Ano (%)</th>
-          <th class="text-right">Rend. Bruto</th>
-          <th class="text-right">IR</th> <th class="text-right">IOF</th> <th class="text-right">Taxas</th> <th class="text-right">V. Final Líquido</th>
-          <th class="text-right">Lucro Líquido</th>
-          <th class="text-center">Ganho/Perda (%)</th>
-        </tr>
-      </thead>
-      <tbody id="investmentTable">
-        <tr>
-          <td colspan="13" class="text-center">Carregando histórico...</td> </tr>
-      </tbody>
-    </table>
-  </div>
+  <main class="historico-main">
+    <section class="historico-hero">
+      <span class="hero-pill">Histórico</span>
+      <h1>Histórico de Simulações</h1>
+      <p>Revise e exporte suas simulações salvas no navegador, com colunas organizadas e destaques de ganhos.</p>
+    </section>
 
-  <div class="action-button-container">
-    <button id="removeSelected" class="btn btn-danger mx-2">Remover Selecionados</button>
-    <button id="exportCsv" class="btn btn-success mx-2">Exportar CSV</button>
-  </div>
-</div>
+    <section class="history-card">
+      <div class="history-card-header">
+        <div>
+          <p class="eyebrow">Registros recentes</p>
+          <h2 class="card-title">Tabela de simulações</h2>
+        </div>
+        <div class="history-meta">
+          <span class="badge-soft">Armazenado localmente</span>
+          <span class="badge-soft">Atualiza em tempo real</span>
+        </div>
+      </div>
 
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<script src="./JS/export.js"></script>
-<script src="./JS/historico.js"></script>
+      <div class="history-table-wrapper">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th class="checkbox-cell"><input type="checkbox" id="selectAll" title="Selecionar Todos"></th>
+              <th class="text-left">Data e Hora</th>
+              <th class="text-center">Tipo</th>
+              <th class="text-right">V. Inicial</th>
+              <th class="text-center">Tempo (Dias)</th>
+              <th class="text-center">Taxa de Juros ao Ano (%)</th>
+              <th class="text-right">Rend. Bruto</th>
+              <th class="text-right">IR</th>
+              <th class="text-right">IOF</th>
+              <th class="text-right">Taxas</th>
+              <th class="text-right">V. Final Líquido</th>
+              <th class="text-right">Lucro Líquido</th>
+              <th class="text-center">Ganho/Perda (%)</th>
+            </tr>
+          </thead>
+          <tbody id="investmentTable">
+            <tr>
+              <td colspan="13" class="text-center">Carregando histórico...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="history-actions">
+        <button id="removeSelected" class="pill-button ghost">Remover Selecionados</button>
+        <button id="exportCsv" class="pill-button primary">Exportar CSV</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="./JS/export.js"></script>
+  <script src="./JS/historico.js"></script>
 
 </body>
 </html>

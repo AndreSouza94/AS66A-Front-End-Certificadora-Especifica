@@ -29,8 +29,8 @@
 
 .faq-category h2 {
     font-size: 1.6em;
-    color: #35C453; /* Verde Principal do Projeto */
-    border-bottom: 2px solid #35C453;
+    color: #0f1f3d;
+    border-bottom: 2px solid #0f1f3d;
     padding-bottom: 5px;
     margin-bottom: 20px;
     font-weight: 600;
@@ -49,8 +49,8 @@
 
 .accordion-header {
     width: 100%;
-    background-color: #F9F9F9;
-    color: #333333;
+    background-color: #f6f8fc;
+    color: #1d1d1f;
     padding: 16px 20px;
     text-align: left;
     font-size: 1em;
@@ -61,18 +61,19 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    transition: background-color 0.3s, color 0.3s;
+    transition: background-color 0.3s, color 0.3s, transform 0.2s ease;
 }
 
 .accordion-header:hover {
-    background-color: #E6F7E9; /* Verde suave no hover */
-    color: #35C453;
+    background-color: #e8efff;
+    color: #0f1f3d;
+    transform: translateY(-1px);
 }
 
 /* Estilo para o cabeçalho ATIVO (aberto) */
 .accordion-header.active {
-    background-color: #E6F7E9;
-    color: #35C453;
+    background-color: #e8efff;
+    color: #0f1f3d;
     border-bottom: 1px solid #DDDDDD;
 }
 
@@ -115,8 +116,8 @@
 .btn-secondary {
     /* Garante que o CTA do FAQ e Comparação tenham o mesmo estilo secundário */
     background-color: white;
-    color: #35C453;
-    border: 1px solid #35C453;
+    color: #0f1f3d;
+    border: 1px solid #0f1f3d;
     padding: 10px 20px;
     border-radius: 4px;
     text-decoration: none;
@@ -125,7 +126,7 @@
 }
 
 .btn-secondary:hover {
-    background-color: #E6F7E9; 
+    background-color: #e8efff;
 }
 
 .link-faq {
