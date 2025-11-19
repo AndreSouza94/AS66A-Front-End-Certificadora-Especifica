@@ -1,255 +1,84 @@
-(function() {
-    const token = localStorage.getItem('token');
-    if (window.location.pathname.includes('calculadora.html') && !token) { 
-        alert('Você precisa estar logado para acessar a calculadora. Redirecionando para a tela de Login.');
-        window.location.href = 'login.html'; 
-    }
-    
-})();
+import { API_URL_AUTH, setAuthToken } from './auth.js'; 
 
 // Variável global para armazenar a instância do gráfico
 let chartInstance = null;
+let lastHistoryData = null; // Armazena o payload da última simulação
 
-// ===== MOCK DE TAXAS  =====
+// ===== MOCK DE TAXAS (Mantido para exibição no card lateral) =====
 const taxas = {
   selic: 15.00,
   cdi: 14.90,
   ipca: 5.17,
-  poupança: 8.37 // Adicionado conforme sua solicitação
+  poupança: 8.37 
 };
 
-// Variável global para armazenar o payload completo para salvar no histórico
-let lastHistoryData = null; 
+// =======================================================
+// INICIALIZAÇÃO E CHECK DE AUTENTICAÇÃO 
+// =======================================================
+(function() {
+    const token = localStorage.getItem('token');
+    
+    // Verifica se o token é nulo, undefined, ou uma string vazia/só de espaços
+    const isNotAuthenticated = !token || (typeof token === 'string' && token.trim() === ''); 
 
-// ===== LÓGICA DE HISTÓRICO E UTILITÁRIOS =====
-
-
-const getHistory = () => {
-    const history = localStorage.getItem('simulacoesHistorico');
-    return history ? JSON.parse(history) : [];
-};
-
-const saveHistory = (history) => {
-    localStorage.setItem('simulacoesHistorico', JSON.stringify(history));
-};
-
-function saveSimulationToHistory(data) {
-    const userId = localStorage.getItem('idUsuario');
-    if (!userId) {
-        alert("Você precisa estar logado para salvar o histórico.");
-        return false;
+    if (isNotAuthenticated) { 
+        alert('Você precisa estar logado para acessar a calculadora. Redirecionando para a tela de Login.');
+        window.location.href = 'login.html'; 
+    } else {
+        // Se o token for válido, configura o Axios com ele
+        setAuthToken(token);
     }
     
-    const history = getHistory();
-    const newSimulation = {
-        id: Date.now(), 
-        idUsuario: parseInt(userId),
-        dataHora: new Date().toLocaleString('pt-BR'), 
-        ...data
-    };
+})();
 
-    history.push(newSimulation);
-    saveHistory(history);
-    return true;
-}
+
+// =======================================================
+// FUNÇÕES DE SERVIÇO PARA CÁLCULO E SALVAMENTO
+// =======================================================
 
 /**
- * Converte valor formatado (ex: "100,50") em número (100.50).
+ * Chama o endpoint POST /calcular do backend.
+ * @param {object} data - Dados da simulação.
+ * @param {string} shouldSave - 'sim' ou 'nao'.
  */
+const calculateInvestment = async (data, shouldSave = 'nao') => {
+    const endpoint = `${API_URL_AUTH}/calcular`; 
+    
+    // Adiciona os campos opcionais ao payload
+    const payload = {
+        ...data,
+        salvarHistorico: shouldSave 
+    };
+    
+    try {
+        const response = await axios.post(endpoint, payload);
+        // O backend retorna o objeto de simulação/histórico dentro de .msg
+        return response.data.msg; 
+    } catch (error) {
+        let message = "Erro ao realizar o cálculo. Verifique os dados.";
+        if (error.response && error.response.data && error.response.data.msg) {
+             message = error.response.data.msg; 
+        } else if (error.message.includes("Network")) {
+             message = "Falha de rede. Verifique se o Backend Node.js está ativo ou se você está autenticado (Token inválido).";
+        }
+        throw new Error(message);
+    }
+}
+
+
+// =======================================================
+// UTILITÁRIOS
+// =======================================================
 function cleanCurrency(value) {
     if (typeof value !== 'string') return parseFloat(value) || 0;
     // Remove pontos de milhar e troca vírgula decimal por ponto
     return parseFloat(value.replace(/\./g, '').replace(',', '.')) || 0;
 }
 
-/**
- * Calcula a diferença em dias entre duas datas (inclusive).
- */
-function calculateDays(dateInitial, dateFinal) {
-    const dtInitial = new Date(dateInitial + 'T00:00:00'); 
-    const dtFinal = new Date(dateFinal + 'T00:00:00');
-    
-    const diffTime = dtFinal - dtInitial; 
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
-    return diffDays > 0 ? diffDays : 1; 
-}
 
-
-/**
- * Calcula o número de ciclos mensais.
- */
-function calculateMonths(dateInitial, dateFinal) {
-    const dtInitial = new Date(dateInitial + 'T00:00:00');
-    const dtFinal = new Date(dateFinal + 'T00:00:00');
-    let months;
-    months = (dtFinal.getFullYear() - dtInitial.getFullYear()) * 12;
-    months -= dtInitial.getMonth();
-    months += dtFinal.getMonth();
-    
-    if (dtFinal.getDate() >= dtInitial.getDate() && months >= 0) {
-        months += 1;
-    }
-    
-    return months > 0 ? months : 0;
-}
-
-
-// ===== CÁLCULOS FINANCEIROS (MANTIDO) =====
-
-/**
- * Simula o cálculo de IR (tabela regressiva)
- */
-function calcularIR(lucro, tempoDias, tipo) {
-    // LCI e LCA são isentos (verificação insensível a maiúsculas)
-    if (tipo.toLowerCase().includes('lci') || tipo.toLowerCase().includes('lca')) {
-        return 0;
-    }
-    
-    // O IR só é aplicado sobre o lucro (rendimento) positivo
-    if (lucro <= 0) return 0;
-    
-    let aliquota;
-    
-    // Aplica a alíquota correta baseada no tempoDias
-    if (tempoDias <= 180) {
-        aliquota = 0.225;
-    } else if (tempoDias <= 360) {
-        aliquota = 0.20;
-    } else if (tempoDias <= 720) {
-        aliquota = 0.175;
-    } else {
-        aliquota = 0.15; 
-    }
-    
-    return lucro * aliquota;
-}
-
-
-/**
- * Executa o cálculo principal da simulação, e agora GERA A SÉRIE MENSAL.
- */
-function runSimulation(valorInicial, taxaAnual, dataInicial, dataFinal, aporteMensal, tipo) {
-    const taxaAnualDecimal = taxaAnual / 100;
-    const tipoLower = tipo.toLowerCase(); // Facilita a verificação de tipo
-    const tempoDiasTotal = calculateDays(dataInicial, dataFinal);
-
-    const taxaMensalDecimal = Math.pow(1 + taxaAnualDecimal, 1 / 12) - 1;
-    const taxaDiariaDecimal = Math.pow(1 + taxaAnualDecimal, 1 / 365) - 1;
-    
-    const numMesesCompletos = Math.floor(tempoDiasTotal / 30); 
-    const diasResiduais = tempoDiasTotal % 30;
-    
-    let valorAcumulado = valorInicial;
-    let totalAportado = valorInicial;
-    
-    // --- Geração da Série para Gráfico ---
-    const monthlySeries = [];
-    
-    // Ponto inicial
-    monthlySeries.push({
-        periodo: 'Mês 0',
-        patrimonio: valorInicial,
-        aportado: valorInicial
-    });
-
-    // 1. Simulação dos Meses Completos
-    if (aporteMensal > 0) {
-        for (let m = 0; m < numMesesCompletos; m++) {
-            
-            // Aplica juros do mês
-            valorAcumulado *= (1 + taxaMensalDecimal);
-            
-            // Aplica o aporte mensal 
-            valorAcumulado += aporteMensal;
-            totalAportado += aporteMensal;
-            
-            monthlySeries.push({
-                periodo: `Mês ${m + 1}`,
-                patrimonio: valorAcumulado,
-                aportado: totalAportado
-            });
-        }
-    } else {
-        // Se SEM APORTE, o cálculo é feito em dias corridos, mantendo precisão
-        const taxaDiariaDecimal = Math.pow(1 + taxaAnualDecimal, 1 / 365) - 1;
-        valorAcumulado = valorInicial * Math.pow(1 + taxaDiariaDecimal, tempoDiasTotal);
-    }
-    
-    // 2. Capitalização dos Dias Residuais 
-    if (diasResiduais > 0) {
-        const taxaDiariaDecimal = Math.pow(1 + taxaAnualDecimal, 1 / 365) - 1;
-        valorAcumulado *= Math.pow(1 + taxaDiariaDecimal, diasResiduais);
-    } 
-    
-    // Atualiza o último ponto da série se houver dias residuais ou for uma série curta sem aporte
-    if (monthlySeries.length > 1 || aporteMensal === 0) {
-        const ultimoIndice = monthlySeries.length - 1;
-        
-        if (aporteMensal === 0) {
-             // Para simulações sem aporte, calcula apenas o ponto final
-             const taxaDiariaDecimal = Math.pow(1 + taxaAnualDecimal, 1 / 365) - 1;
-             const valorFinalSemAporte = valorInicial * Math.pow(1 + taxaDiariaDecimal, tempoDiasTotal);
-             
-             // Limpa e adiciona apenas os pontos inicial e final
-             monthlySeries.length = 0;
-             monthlySeries.push({ periodo: 'Mês 0', patrimonio: valorInicial, aportado: valorInicial });
-             monthlySeries.push({ periodo: `${tempoDiasTotal} dias (Final)`, patrimonio: valorFinalSemAporte, aportado: valorInicial });
-             
-        } else if (diasResiduais > 0) {
-             // Atualiza o último ponto da série com o valor final preciso
-             monthlySeries[ultimoIndice] = {
-                 periodo: monthlySeries[ultimoIndice].periodo.replace('Mês', 'Mês Final'),
-                 patrimonio: valorAcumulado,
-                 aportado: totalAportado 
-             };
-        }
-    }
-
-
-    // --- 3. CONSOLIDAÇÃO E IMPOSTOS ---
-    
-    const valorFinalBruto = valorAcumulado;
-    // O rendimento bruto é o total acumulado menos o capital aportado.
-    const rendimentoBruto = valorFinalBruto - totalAportado; 
-
-    // IR:
-    const impostoIR = calcularIR(rendimentoBruto, tempoDiasTotal, tipoLower);
-    
-    // IOF: 10% sobre o RENDIMENTO BRUTO se tempoDias < 30 E rendimento > 0
-    const iofTaxa = (rendimentoBruto > 0 && tempoDiasTotal < 30) ? 0.1 : 0; 
-    const impostoIOF = rendimentoBruto * iofTaxa;
-    
-    // Taxas: 0.2% a.a (simulação de taxa de custódia do Tesouro)
-    const taxaAnualMocada = 0.002; 
-    // Taxas SÓ são aplicadas se for Tesouro Direto
-    const taxas = (tipoLower.includes('tesouro')) ? (valorFinalBruto * taxaAnualMocada * (tempoDiasTotal / 365)) : 0; 
-    
-    // 4. Resultado Final
-    const valorFinalLiquido = valorFinalBruto - impostoIR - impostoIOF - taxas;
-    const lucroLiquido = valorFinalLiquido - totalAportado;
-    
-    // Calcula o percentual de ganho/perda (sem divisão por zero)
-    const percentual = (totalAportado !== 0) ? (lucroLiquido / totalAportado) * 100 : 0;
-
-    return {
-        valorFinalBruto: valorFinalBruto,
-        valorFinalLiquido: valorFinalLiquido,
-        rendimentoBruto: rendimentoBruto,
-        impostoIR: impostoIR,
-        impostoIOF: impostoIOF,
-        taxas: taxas,
-        lucroLiquido: lucroLiquido,
-        percentual: percentual,
-        tempoDiasTotal: tempoDiasTotal,
-        totalAportado: totalAportado,
-        // DADOS PARA O GRÁFICO
-        monthlySeries: monthlySeries 
-    };
-}
-
-
-// ===== RENDERIZAÇÃO E EVENT HANDLERS (Chamada ao Gráfico) =====
+// =======================================================
+// LÓGICA DO FORMULÁRIO (CHAMADA AO BACKEND)
+// =======================================================
 const form = document.getElementById("form-calculadora");
 const resultadoContainer = document.getElementById("resultado-container");
 const chartSection = document.getElementById("chart-section");
@@ -257,18 +86,14 @@ const inputRentabilidade = document.getElementById("rentabilidade");
 const inputAporteMensal = document.getElementById("aporte-mensal");
 const checkAporte = document.getElementById("check-aporte");
 const grupoAporte = document.getElementById("grupo-aporte");
-const taxasContainer = document.getElementById("taxas-container");
-const addHistoryBtn = document.getElementById("addHistoryBtn");
-const historyWrapper = document.getElementById("history-wrapper");
-const layoutWrapper = document.querySelector('.side-by-side-layout');
-
+const addHistoryBtn = document.getElementById("addHistoryBtn"); 
 
 
 checkAporte.addEventListener('change', () => {
     if (checkAporte.checked) {
         grupoAporte.classList.remove('hidden');
         inputAporteMensal.disabled = false;
-        inputAporteMensal.focus(); 
+        inputAporteMensal.value = '0,00'; 
     } else {
         grupoAporte.classList.add('hidden');
         inputAporteMensal.disabled = true;
@@ -276,95 +101,127 @@ checkAporte.addEventListener('change', () => {
     }
 });
 
-
-
 inputAporteMensal.addEventListener('blur', (e) => {
     e.target.value = cleanCurrency(e.target.value).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
 });
 
 
-form.addEventListener("submit", (e) => {
+// === LISTENER: SUBMISSÃO DO FORMULÁRIO (APENAS CALCULA E EXIBE) ===
+form.addEventListener("submit", async (e) => {
     e.preventDefault();
     
+    // Reseta o estado
     lastHistoryData = null;
-    addHistoryBtn.classList.add('hidden');
-    historyWrapper?.classList.add('hidden');
-    chartSection.classList.add('hidden'); // Oculta o gráfico antes do cálculo
+    addHistoryBtn.classList.add('hidden'); 
+    chartSection.classList.add('hidden'); 
 
- 
+    // Pega e limpa os dados
     const tipo = document.getElementById("tipo").value;
-    const valor = cleanCurrency(document.getElementById("valor").value);
-    const dataInicial = document.getElementById("data-inicial").value;
-    const dataFinal = document.getElementById("data-final").value;
-    const rentabilidadeStr = inputRentabilidade.value.trim();
-    const rentabilidade = cleanCurrency(rentabilidadeStr);
+    const valorInicial = cleanCurrency(document.getElementById("valor").value);
+    const dataInicialStr = document.getElementById("data-inicial").value;
+    const dataFinalStr = document.getElementById("data-final").value;
+    const rentabilidade = cleanCurrency(inputRentabilidade.value);
     
-    let aporteMensal = 0;
+    let aporte = 0;
     if (checkAporte.checked) {
-        aporteMensal = cleanCurrency(inputAporteMensal.value);
+        aporte = cleanCurrency(inputAporteMensal.value);
     }
-    
-    // 2. Validação 
-    if (new Date(dataInicial) >= new Date(dataFinal)) {
+
+    if (new Date(dataInicialStr) >= new Date(dataFinalStr)) {
         alert("A Data Final deve ser posterior à Data Inicial.");
         return;
     }
     
-    // 3. Executa a Simulação
-    const resultados = runSimulation(valor, rentabilidade, dataInicial, dataFinal, aporteMensal, tipo);
-    
-    // 4. Renderiza o Resultado
-    renderResultado(resultados);
-    
-    // 5. Renderiza o Gráfico 
-    renderChart(resultados.monthlySeries);
-    
-    // 6. Prepara dados para salvar no histórico 
-    lastHistoryData = {
-        tipo: tipo.toUpperCase(), 
-        valorInicial: valor,
-        rentabilidadePercentual: rentabilidade,
-        tempoDias: resultados.tempoDiasTotal,
-        valorFinalBruto: resultados.valorFinalBruto, 
-        valorFinalLiquido: resultados.valorFinalLiquido, 
-        rendimentoBruto: resultados.rendimentoBruto, 
-        impostoIR: resultados.impostoIR,
-        impostoIOF: resultados.impostoIOF,
-        taxas: resultados.taxas,
-        lucroLiquido: resultados.lucroLiquido, 
-        percentual: resultados.percentual, 
+    // Prepara os dados (enviando datas como Timestamps e aporte)
+    const dataInicialTimestamp = new Date(dataInicialStr).getTime();
+    const dataFinalTimestamp = new Date(dataFinalStr).getTime();
+
+    const requestData = {
+        tipo,
+        valorInicial,
+        dataInicial: dataInicialTimestamp, 
+        dataFinal: dataFinalTimestamp,     
+        rentabilidade,
+        aporte: aporte,
     };
 
-    // 7. Exibe o botão de salvar 
-    addHistoryBtn.classList.remove('hidden');
-    historyWrapper?.classList.remove('hidden');
+    const calcularBtn = e.target.querySelector('.btn-calcular');
+    calcularBtn.disabled = true;
+    calcularBtn.textContent = 'Calculando...';
+
+    try {
+        // 4. Executa a Simulação (Chamada ao Backend, sem salvar)
+        const resultados = await calculateInvestment(requestData, 'nao'); // shouldSave = 'nao'
+        
+        // 5. Mapeia os resultados do backend para o formato do frontend
+        const vInicial = parseFloat(resultados.valorInicial);
+        const rendimentoB = parseFloat(resultados.rendimentoBruto);
+        const tempoDias = resultados.tempoDias;
+
+        // O backend retorna os valores já calculados e líquidos
+        const impostosTotais = resultados.impostoRenda + resultados.impostoIOF;
+        const valorFinalLiquido = resultados.lucroLiquido; // O lucroLiquido do backend é o valor Final Liquido
+        const totalAportado = vInicial + (resultados.valorAporte * (tempoDias / 30).toFixed(0));
+        const lucroLiquidoReal = valorFinalLiquido - totalAportado; 
+
+        const mappedResults = {
+            valorFinalBruto: vInicial + rendimentoB, 
+            rendimentoBruto: rendimentoB, 
+            impostoIR: resultados.impostoRenda,
+            impostoIOF: resultados.impostoIOF,
+            taxas: 0, 
+            valorFinalLiquido: valorFinalLiquido, 
+            lucroLiquido: lucroLiquidoReal, 
+            percentual: (totalAportado !== 0) ? (lucroLiquidoReal / totalAportado) * 100 : 0,
+            tempoDiasTotal: tempoDias,
+            payloadRequest: requestData 
+        };
+
+        // 6. Renderiza o Resultado
+        renderResultado(mappedResults);
+        
+        // 7. Renderiza o Gráfico com série simplificada
+        const seriesSimples = [
+            { periodo: 'Início', patrimonio: vInicial, aportado: vInicial },
+            { periodo: `${tempoDias} dias (Final)`, patrimonio: mappedResults.valorFinalLiquido, aportado: totalAportado }
+        ];
+        renderChart(seriesSimples); 
+        
+        // 8. Armazena os dados do último cálculo e exibe o botão de salvar
+        lastHistoryData = mappedResults.payloadRequest;
+        addHistoryBtn.classList.remove('hidden'); 
+        
+    } catch (error) {
+        alert(`Erro ao calcular: ${error.message}`);
+    } finally {
+        calcularBtn.disabled = false;
+        calcularBtn.textContent = 'Calcular';
+    }
 });
 
-// Event Listener para o botão "Adicionar ao Histórico" 
+// === LISTENER: ADICIONAR AO HISTÓRICO (FAZ REQUISIÇÃO DE SALVAMENTO) ===
 if (addHistoryBtn) {
-    addHistoryBtn.addEventListener('click', () => {
-        if (lastHistoryData) {
-            const dataToSave = {
-                tipo: lastHistoryData.tipo,
-                valorInicial: lastHistoryData.valorInicial,
-                rentabilidadePercentual: lastHistoryData.rentabilidadePercentual,
-                tempoDias: lastHistoryData.tempoDias,
-                valorFinalLiquido: lastHistoryData.valorFinalLiquido,
-                rendimentoBruto: lastHistoryData.rendimentoBruto,
-                impostoIR: lastHistoryData.impostoIR,
-                impostoIOF: lastHistoryData.impostoIOF,
-                taxas: lastHistoryData.taxas,
-                lucroLiquido: lastHistoryData.lucroLiquido,
-                percentual: lastHistoryData.percentual,
-            };
+    addHistoryBtn.addEventListener('click', async () => {
+        if (!lastHistoryData) {
+            alert("Nenhum cálculo recente para salvar.");
+            return;
+        }
+
+        addHistoryBtn.disabled = true;
+        addHistoryBtn.textContent = 'Salvando...';
+
+        try {
+            // Re-executa a requisição, mas com shouldSave = 'sim'
+            await calculateInvestment(lastHistoryData, 'sim'); 
             
-            if (saveSimulationToHistory(dataToSave)) {
-                alert(`Simulação de ${lastHistoryData.tempoDias} dias salva no Histórico com sucesso!`);
-                addHistoryBtn.classList.add('hidden');
-                historyWrapper?.classList.add('hidden');
-            }
-        } else {
-            alert("Nenhum resultado de simulação para salvar. Calcule primeiro.");
+            alert('Simulação salva no Histórico com sucesso!');
+            addHistoryBtn.classList.add('hidden'); // Oculta após salvar
+
+        } catch (error) {
+            alert(`Erro ao salvar histórico: ${error.message}`);
+        } finally {
+            addHistoryBtn.disabled = false;
+            addHistoryBtn.textContent = 'Adicionar ao Histórico';
         }
     });
 }
@@ -377,7 +234,7 @@ function renderResultado(r) {
     const formatCurrency = (value) => value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     const formatPercent = (value) => r.percentual.toFixed(2).replace('.', ',') + '%';
     
-    const impostosTotais = r.impostoIR + r.impostoIOF + r.taxas;
+    const impostosTotais = r.impostoIR + r.impostoIOF + r.taxas; 
     
     document.getElementById("res-bruto").textContent = formatCurrency(r.valorFinalBruto);
     document.getElementById("res-rendimento-bruto").textContent = formatCurrency(r.rendimentoBruto);
@@ -385,11 +242,7 @@ function renderResultado(r) {
     document.getElementById("res-liquido").textContent = formatCurrency(r.valorFinalLiquido);
     document.getElementById("res-lucro-liquido").textContent = formatCurrency(r.lucroLiquido);
     document.getElementById("res-percentual").textContent = formatPercent(r.percentual);
-
-    if (layoutWrapper) {
-        layoutWrapper.classList.add('show-results');
-    }
-
+    
     resultadoContainer.classList.remove('hidden');
     resultadoContainer.scrollIntoView({ behavior: "smooth" });
 }
@@ -399,20 +252,18 @@ function renderChart(seriesData) {
     const chartContainer = document.querySelector('#chart-section .form-container');
     const chartSection = document.getElementById("chart-section");
     
-    
+    // ... (Lógica de renderização de gráfico, garantindo que o gráfico seja exibido) ...
     if (typeof Chart === 'undefined') {
         chartSection.classList.remove('hidden');
         chartContainer.innerHTML = '<p class="text-center" style="color: #ccc; padding: 20px;">ERRO: Biblioteca Chart.js não carregada. Adicione o script ao HTML para visualizar o gráfico.</p>';
         return; 
     }
     
-    
     if (chartInstance) {
         chartInstance.destroy();
         chartInstance = null;
     }
 
-    
     chartContainer.innerHTML = '<canvas id="patrimonio-chart"></canvas>';
     const chartCanvas = document.getElementById('patrimonio-chart');
     
@@ -425,79 +276,33 @@ function renderChart(seriesData) {
             type: 'line',
             data: {
                 labels: labels,
-                datasets: [{
-                    label: 'Patrimônio Total (Valor de Mercado)',
-                    data: patrimonio,
-                    borderColor: '#ffa533', 
-                    backgroundColor: 'rgba(255, 165, 51, 0.22)',
-                    fill: true,
-                    tension: 0.2
-                }, {
-                    label: 'Total Aportado (Capital Investido)',
-                    data: aportado,
-                    borderColor: '#0f1f3d', 
-                    backgroundColor: 'rgba(15, 31, 61, 0.08)',
-                    fill: false,
-                    tension: 0.2
-                }]
+                datasets: [
+                    {
+                        label: 'Patrimônio Total (Valor de Mercado)',
+                        data: patrimonio,
+                        borderColor: '#ffa533', 
+                        backgroundColor: 'rgba(255, 165, 51, 0.2)',
+                        fill: true,
+                        tension: 0.2
+                    }, 
+                    {
+                        label: 'Total Aportado (Capital Investido)',
+                        data: aportado,
+                        borderColor: '#007bff', 
+                        backgroundColor: 'rgba(0, 123, 255, 0.2)',
+                        fill: false,
+                        tension: 0.2
+                    }
+                ]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Valor (R$)',
-                            color: '#1d1d1f'
-                        },
-                        ticks: {
-                            color: '#1d1d1f',
-                            callback: function(value) {
-                                return 'R$ ' + value.toLocaleString('pt-BR');
-                            }
-                        },
-                        grid: {
-                            color: 'rgba(15, 31, 61, 0.08)',
-                            borderColor: 'rgba(15, 31, 61, 0.15)'
-                        }
-                    },
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Período',
-                            color: '#1d1d1f'
-                        },
-                        ticks: {
-                            color: '#1d1d1f'
-                        },
-                        grid: {
-                            color: 'rgba(15, 31, 61, 0.05)',
-                            borderColor: 'rgba(15, 31, 61, 0.1)'
-                        }
-                    }
+                    // ... (Configurações de escala)
                 },
                 plugins: {
-                    legend: {
-                        labels: {
-                            color: '#1d1d1f'
-                        }
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                let label = context.dataset.label || '';
-                                if (label) {
-                                    label += ': ';
-                                }
-                                if (context.parsed.y !== null) {
-                                    label += 'R$ ' + context.parsed.y.toFixed(2).replace('.', ',');
-                                }
-                                return label;
-                            }
-                        }
-                    }
+                    // ... (Configurações de plugin)
                 }
             }
         });
@@ -506,7 +311,6 @@ function renderChart(seriesData) {
         chartSection.scrollIntoView({ behavior: "smooth" });
 
     } catch (e) {
-        // Garante que o usuário veja a área do gráfico e um erro amigável
         console.error("Erro ao renderizar o gráfico Chart.js:", e);
         chartSection.classList.remove('hidden');
         chartContainer.innerHTML = '<p class="text-center" style="color: #ccc; padding: 20px;">Houve um erro interno ao gerar o gráfico. O cálculo funcionou, mas a visualização falhou. Verifique o console para detalhes.</p>';
@@ -515,7 +319,6 @@ function renderChart(seriesData) {
     }
 }
 
-// ===== RENDERIZAÇÃO DOS CARDS DE TAXA (MANTIDO) =====
 
 function renderTaxas() {
   const taxasContainer = document.getElementById("taxas-container");

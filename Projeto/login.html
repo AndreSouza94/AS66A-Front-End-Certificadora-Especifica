@@ -21,7 +21,6 @@
     <div class="card-container">
       <div class="card-flip" id="cardFlip">
 
-        <!-- Lado Login -->
         <div class="form-side">
           <h3 class="text-center mb-4">Login</h3>
           <form>
@@ -41,7 +40,6 @@
           </p>
         </div>
 
-        <!-- Lado Cadastro -->
         <div class="form-side form-back">
           <h3 class="text-center mb-4">Cadastro</h3>
           <form>
@@ -54,13 +52,17 @@
               <input type="email" class="form-control" id="cadEmail" placeholder="Digite seu e-mail" required>
             </div>
             <div class="mb-3">
+              <label for="cadCpf" class="form-label">CPF</label>
+              <input type="text" class="form-control" id="cadCpf" placeholder="000.000.000-00" required>
+            </div>
+            <div class="mb-3">
               <label for="cadSenha" class="form-label">Senha</label>
               <input type="password" class="form-control" id="cadSenha" placeholder="Crie sua senha" required>
             </div>
             <div class="mb-3"> <label for="confirmaSenha" class="form-label">Confirme a Senha</label>
               <input type="password" class="form-control" id="confirmaSenha" placeholder="Confirme sua senha" required>
             </div> <br>
-            <button type="submit" class="btn btn-primary w-100">Cadastrar</button>
+            <button type="submit" class="btn-primary w-100">Cadastrar</button>
           </form>
           <p class="text-center mt-3">
             Já tem conta? <a href="index.html" id="toLogin">Entrar</a>
@@ -75,6 +77,8 @@
     <p class="copy">© 2025 Calculadora Renda Fixa. Ferramenta educativa para simulação de investimentos.</p>
   </footer>
 
-  <script src="./JS/login.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="./JS/auth.js" type="module"></script>
+  <script src="./JS/login.js" type="module"></script>
 </body>
 </html>

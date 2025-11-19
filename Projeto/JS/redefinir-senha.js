@@ -1,4 +1,6 @@
-// frontend/JS/redefinir-senha.js - Lógica para redefinir a senha (Integração Real)
+// Projeto/JS/redefinir-senha.js - Versão final e integrada
+
+import { resetPassword } from './auth.js'; 
 
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("resetForm");
@@ -8,8 +10,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const resetBtn = document.getElementById("resetPasswordBtn");
 
     
-    const API_BASE_URL = 'http://localhost:3000'; 
-
     // 1. EXTRAI O TOKEN DA URL
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
@@ -29,32 +29,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
     /**
      * Função REAL de Redefinição de Senha.
-     * Envia o token e a nova senha para o endpoint do Backend.
      */
     const resetPasswordIntegration = async (token, password) => {
-        // O endpoint deve incluir o token como parâmetro de URL
-        const endpoint = `${API_BASE_URL}/api/auth/resetPassword/${token}`; 
-        
         try {
-            // Chamada Axios REAL: PATCH para enviar a nova senha
-            const response = await axios.patch(endpoint, { password });
-
-            // O Backend deve retornar 200 e a mensagem/token de sucesso no response.data
-            return response.data;
+            // Chamada ao serviço centralizado
+            const response = await resetPassword(token, password);
+            return response;
             
         } catch (error) {
-            // Tratamento de erros (Ex: 400 - Token inválido/expirado)
             let errorMessage = "Erro de conexão ou servidor desconhecido.";
             
             if (error.response) {
-                // Erro HTTP: usa a mensagem de erro do Backend
                 errorMessage = error.response.data.message || `Erro do servidor: Status ${error.response.status}`;
             } else if (error.request) {
-                // Erro de rede: servidor não respondeu
                 errorMessage = "Falha de rede. Verifique se o Backend Node.js está ativo.";
             }
 
-            // Lança o erro para ser pego pelo catch no event listener
             throw new Error(errorMessage);
         }
     };
@@ -68,7 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const newPassword = newPasswordInput.value;
         const confirmPassword = confirmPasswordInput.value;
 
-        // 1. Validação de Senha (mínimo de 6 caracteres - ajuste se o backend for diferente)
+        // 1. Validação de Senha (mínimo de 6 caracteres)
         if (newPassword.length < 6) { 
              displayStatus("A nova senha deve ter pelo menos 6 caracteres.", false);
              return;
@@ -86,34 +76,23 @@ document.addEventListener("DOMContentLoaded", () => {
              return;
         }
         
-        // 4. Bloqueia a UI e mostra o spinner
         resetBtn.disabled = true;
         resetBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Redefinindo...';
         
         try {
-            // 5. Chama a função de integração REAL
-            const result = await resetPasswordIntegration(token, newPassword);
+            await resetPasswordIntegration(token, newPassword);
 
-            // 6. Sucesso: exibe mensagem e redireciona (o backend retorna o token)
             displayStatus('Senha redefinida com sucesso! Você será redirecionado para o Login.', true);
             
-            // O Backend retorna um novo token de login após a redefinição: salve-o!
-            if (result.token) {
-                 localStorage.setItem('token', result.token);
-                 // Você pode adicionar a lógica de salvar outros dados do usuário aqui
-            }
-
             // Redireciona para o login após 3 segundos
             setTimeout(() => {
                 window.location.href = 'login.html'; 
             }, 3000); 
 
         } catch (error) {
-            // 7. Erro: exibe a mensagem de erro
             displayStatus(error.message, false);
             
         } finally {
-            // 8. Libera o botão (se não houve redirecionamento)
             resetBtn.disabled = false;
             resetBtn.innerHTML = 'Redefinir Senha';
         }

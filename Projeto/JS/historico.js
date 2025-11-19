@@ -1,26 +1,40 @@
+// Projeto/JS/historico.js - Versão final e integrada
+
+import { API_URL_AUTH, setAuthToken } from './auth.js'; 
+
+// Variáveis globais para os botões de ação
+const removeSelectedBtn = document.getElementById('removeSelected');
+
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Check for logged-in user (Requirement: Show only logged user's data)
     const userId = localStorage.getItem('idUsuario');
-    if (!userId) {
-        // Se não houver ID de usuário, redireciona para o login
+    const token = localStorage.getItem('token');
+    
+    // Verifica se o token é nulo, undefined, ou uma string vazia/só de espaços
+    const isNotAuthenticated = !token || (typeof token === 'string' && token.trim() === ''); 
+
+    if (!userId || isNotAuthenticated) {
         alert("Você precisa estar logado para ver o histórico. Redirecionando...");
         window.location.href = 'login.html';
         return;
     }
     
-    // Carrega e renderiza o histórico
+    setAuthToken(token);
     loadHistory();
 
-    // 2. Event listener for Remove Button (Requirement: Remove Selected)
-    document.getElementById('removeSelected').addEventListener('click', removeSelectedSimulations);
-
-    // 3. Event listener for Select All Checkbox
+    // HABILITANDO função de Remoção
+    if (removeSelectedBtn) {
+        removeSelectedBtn.disabled = false; 
+        removeSelectedBtn.textContent = 'Remover Selecionados';
+        removeSelectedBtn.addEventListener('click', removeSelectedSimulations);
+    }
+    
+    // Event listener for Select All Checkbox... 
     const selectAllCheckbox = document.getElementById('selectAll');
     if (selectAllCheckbox) {
         selectAllCheckbox.addEventListener('change', toggleSelectAll);
     }
     
-    // 4. Adiciona listener para a tabela para lidar com checkboxes individuais
+    // Adiciona listener para a tabela para lidar com checkboxes individuais... 
     document.getElementById('investmentTable').addEventListener('change', (e) => {
         if (e.target.classList.contains('row-select')) {
             updateSelectAllState();
@@ -29,13 +43,9 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Helper functions for formatting
-
-// Ajustada para garantir que valores monetários sejam formatados corretamente.
 const formatCurrency = (value) => {
     const numberValue = parseFloat(value);
     if (isNaN(numberValue)) return 'R$ 0,00';
-    
-    // Exibe o valor formatado com 2 casas decimais
     return numberValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 };
 
@@ -45,95 +55,37 @@ const formatPercent = (value) => {
     return numberValue.toFixed(2).replace('.', ',') + '%';
 };
 
-// Helper functions for localStorage
-const getHistory = () => {
-    const history = localStorage.getItem('simulacoesHistorico');
-    return history ? JSON.parse(history) : [];
-};
 
-const saveHistory = (history) => {
-    localStorage.setItem('simulacoesHistorico', JSON.stringify(history));
-};
+// =======================================================
+// FUNÇÕES DE REMOÇÃO (INTEGRAÇÃO COM BACKEND)
+// =======================================================
 
 /**
- * Carrega e renderiza as simulações do usuário logado.
+ * Remove uma simulação pelo ID usando o endpoint DELETE /historico.
  */
-function loadHistory() {
-    const userId = parseInt(localStorage.getItem('idUsuario'));
-    const allHistory = getHistory();
-    
-    // Filtra o histórico apenas para o usuário logado (Requisito 1)
-    const userHistory = allHistory.filter(sim => sim.idUsuario === userId);
-    
-    renderTable(userHistory);
-}
-
-/**
- * Renderiza a tabela com as simulações, incluindo todas as colunas detalhadas.
- */
-function renderTable(simulations) {
-    const tableBody = document.getElementById('investmentTable');
-    tableBody.innerHTML = ''; // Limpa as linhas existentes
-    
-    const COLUMNS_COUNT = 13; // 1 (Checkbox) + 12 colunas de dados
-    
-    if (simulations.length === 0) {
-        const row = tableBody.insertRow();
-        row.innerHTML = `<td colspan="${COLUMNS_COUNT}" class="text-center">Nenhuma simulação encontrada. Adicione uma na Calculadora!</td>`;
-        return;
-    }
-
-    simulations.forEach(sim => {
-        const row = tableBody.insertRow();
-        // Armazena o ID da simulação na linha para fácil acesso
-        row.setAttribute('data-id', sim.id);
-        
-        // Garante que todos os campos existam para evitar erros de renderização
-        const valorInicial = sim.valorInicial || 0;
-        const valorFinalLiquido = sim.valorFinalLiquido || 0;
-        const rendimentoBruto = sim.rendimentoBruto || 0;
-        
-        // NOVOS DETALHES DE IMPOSTOS
-        const impostoIR = sim.impostoIR || 0;
-        const impostoIOF = sim.impostoIOF || 0;
-        const taxasAdmin = sim.taxas || 0;
-        
-        const lucroLiquido = sim.lucroLiquido || (valorFinalLiquido - valorInicial);
-        const percentual = sim.percentual || 0;
-        
-        row.innerHTML = `
-            <td><input type="checkbox" class="row-select" data-id="${sim.id}"></td>
-            <td class="text-left">${sim.dataHora}</td>
-            <td class="text-center">${sim.tipo || 'N/A'}</td>
-            <td class="text-right">${formatCurrency(valorInicial)}</td>
-            <td class="text-center">${sim.tempoDias || 'N/A'}</td>
-            <td class="text-center">${formatPercent(sim.rentabilidadePercentual || 0)}</td>
-            <td class="text-right">${formatCurrency(rendimentoBruto)}</td>
-            <td class="text-right">${formatCurrency(impostoIR)}</td>     <td class="text-right">${formatCurrency(impostoIOF)}</td>    <td class="text-right">${formatCurrency(taxasAdmin)}</td>    <td class="text-right">${formatCurrency(valorFinalLiquido)}</td>
-            <td class="text-right">${formatCurrency(lucroLiquido)}</td>
-            <td class="text-center">${formatPercent(percentual)}</td>
-        `;
-        
-        // Aplica cores de lucro/prejuízo
-        const lucroCell = row.cells[11]; 
-        const percentualCell = row.cells[12]; 
-
-        if (lucroLiquido < 0) {
-            lucroCell.classList.add('error-text');
-            percentualCell.classList.add('error-text');
-        } else if (lucroLiquido > 0) {
-            lucroCell.classList.add('success-text');
-            percentualCell.classList.add('success-text');
+const deleteHistoryItem = async (idHistorico) => {
+    const endpoint = `${API_URL_AUTH}/historico`; // DELETE /api/auth/historico
+    try {
+        const response = await axios.delete(endpoint, {
+            data: { 
+                idHistorico: idHistorico, // O backend espera o campo idHistorico
+                deletarTudo: 'nao' 
+            } 
+        });
+        return response.data;
+    } catch (error) {
+        let message = "Erro ao deletar item.";
+        if (error.response && error.response.data && error.response.data.msg) {
+             message = error.response.data.msg;
         }
-    });
-    
-    updateSelectAllState();
+        throw new Error(message);
+    }
 }
 
 /**
  * Remove as simulações marcadas.
  */
-function removeSelectedSimulations() {
+async function removeSelectedSimulations() {
     const selectedCheckboxes = document.querySelectorAll('#investmentTable .row-select:checked');
     if (selectedCheckboxes.length === 0) {
         alert("Selecione pelo menos uma simulação para remover.");
@@ -144,15 +96,134 @@ function removeSelectedSimulations() {
         return;
     }
 
-    const idsToRemove = Array.from(selectedCheckboxes).map(cb => parseInt(cb.dataset.id));
+    const removeBtn = document.getElementById('removeSelected');
+    removeBtn.disabled = true;
+    removeBtn.textContent = 'Removendo...';
     
-    let allHistory = getHistory();
+    let deletionSuccessCount = 0;
     
-    // Filtra a lista de histórico, removendo os itens selecionados
-    allHistory = allHistory.filter(sim => !idsToRemove.includes(sim.id));
+    try {
+        for (const checkbox of selectedCheckboxes) {
+            const idToRemove = checkbox.dataset.id; // _id do MongoDB
+            try {
+                await deleteHistoryItem(idToRemove);
+                deletionSuccessCount++;
+            } catch (e) {
+                console.error(`Falha ao deletar ID ${idToRemove}:`, e.message);
+            }
+        }
+
+        if (deletionSuccessCount > 0) {
+            alert(`${deletionSuccessCount} simulação(ões) excluída(s) com sucesso.`);
+        } else {
+             alert('Nenhuma simulação foi excluída. Verifique se o item pertence ao seu usuário.');
+        }
+
+    } catch (error) {
+        alert(`Erro geral na remoção: ${error.message}`);
+    } finally {
+        loadHistory(); // Recarrega e renderiza a tabela atualizada
+        removeBtn.disabled = false;
+        removeBtn.textContent = 'Remover Selecionados';
+    }
+}
+
+
+// =======================================================
+// FUNÇÃO DE CARREGAMENTO (INTEGRAÇÃO COM BACKEND)
+// =======================================================
+
+/**
+ * Carrega e renderiza as simulações do usuário logado (Integração REAL com Axios).
+ */
+async function loadHistory() {
+    const tableBody = document.getElementById('investmentTable');
+    const loadingRow = `<tr><td colspan="13" class="text-center">Carregando histórico do servidor...</td></tr>`;
+    tableBody.innerHTML = loadingRow;
     
-    saveHistory(allHistory);
-    loadHistory(); // Recarrega e renderiza a tabela atualizada
+    try {
+        const endpoint = `${API_URL_AUTH}/historico`; // GET /api/auth/historico 
+        const response = await axios.get(endpoint);
+        
+        // O backend retorna um objeto { msg: historicoUsuario[] }
+        const userHistory = response.data.msg; 
+        
+        renderTable(userHistory);
+        
+    } catch (error) {
+        const errorMsg = (error.response && error.response.data && error.response.data.msg) 
+                         ? error.response.data.msg : 'Erro de conexão ou token inválido.';
+        const errorRow = `<tr><td colspan="13" class="text-center error-text">Falha ao carregar histórico: ${errorMsg}</td></tr>`;
+        tableBody.innerHTML = errorRow;
+        console.error("Erro ao buscar histórico:", error.response || error);
+    }
+}
+
+/**
+ * Renderiza a tabela com as simulações, usando os dados do backend.
+ */
+function renderTable(simulations) {
+    const tableBody = document.getElementById('investmentTable');
+    tableBody.innerHTML = ''; 
+    
+    const COLUMNS_COUNT = 13; 
+    
+    if (simulations.length === 0) {
+        const row = tableBody.insertRow();
+        row.innerHTML = `<td colspan="${COLUMNS_COUNT}" class="text-center">Nenhuma simulação encontrada. Adicione uma na Calculadora!</td>`;
+        return;
+    }
+
+    simulations.forEach(sim => {
+        const row = tableBody.insertRow();
+        row.setAttribute('data-id', sim._id); 
+        
+        // Mapeamento e parse dos campos do Backend 
+        const valorInicial = parseFloat(sim.valorInicial || 0);
+        const rendimentoBruto = parseFloat(sim.rendimentoBruto || 0);
+        const impostoIR = parseFloat(sim.impostoRenda || 0);
+        const impostoIOF = parseFloat(sim.impostoIOF || 0);
+        const lucroLiquidoFinal = parseFloat(sim.lucroLiquido || 0); // É o valor final líquido (Valor Inicial + Lucro)
+        
+        const totalAportado = valorInicial + (parseFloat(sim.valorAporte || 0) * (parseFloat(sim.tempoDias) / 30).toFixed(0));
+        const lucroReal = lucroLiquidoFinal - totalAportado;
+        
+        const percentual = (totalAportado !== 0) ? (lucroReal / totalAportado) * 100 : 0;
+        
+        const dataHoraFormatada = new Date(sim.createdAt).toLocaleString('pt-BR');
+        
+        const taxasAdmin = 0; 
+        
+        row.innerHTML = `
+            <td class="checkbox-cell"><input type="checkbox" class="row-select" data-id="${sim._id}"></td>
+            <td class="text-left">${dataHoraFormatada}</td>
+            <td class="text-center">${sim.tipo || 'N/A'}</td>
+            <td class="text-right">${formatCurrency(valorInicial)}</td>
+            <td class="text-center">${sim.tempoDias || 'N/A'}</td>
+            <td class="text-center">${formatPercent(sim.rentabilidade || 0)}</td>
+            <td class="text-right">${formatCurrency(rendimentoBruto)}</td>
+            <td class="text-right">${formatCurrency(impostoIR)}</td>     
+            <td class="text-right">${formatCurrency(impostoIOF)}</td>    
+            <td class="text-right">${formatCurrency(taxasAdmin)}</td>    
+            <td class="text-right">${formatCurrency(lucroLiquidoFinal)}</td>
+            <td class="text-right">${formatCurrency(lucroReal)}</td>
+            <td class="text-center">${formatPercent(percentual)}</td>
+        `;
+        
+        // Aplica cores de lucro/prejuízo
+        const lucroCell = row.cells[11]; 
+        const percentualCell = row.cells[12]; 
+
+        if (lucroReal < 0) {
+            lucroCell.classList.add('error-text');
+            percentualCell.classList.add('error-text');
+        } else if (lucroReal > 0) {
+            lucroCell.classList.add('success-text');
+            percentualCell.classList.add('success-text');
+        }
+    });
+    
+    updateSelectAllState();
 }
 
 /**

@@ -1,5 +1,12 @@
 document.getElementById("exportCsv").addEventListener("click", function() {
-  const table = document.querySelector(".table-dark"); // Seleciona a tabela principal
+  // CORREÇÃO: Usando o novo seletor da tabela
+  const table = document.querySelector(".history-table"); 
+    
+  if (!table) {
+      alert("Erro: Tabela de histórico não encontrada para exportação.");
+      return;
+  }
+    
   const rows = table.querySelectorAll('tbody tr');
   const headerCells = table.querySelectorAll('thead th');
   let csv = [];
@@ -27,6 +34,7 @@ document.getElementById("exportCsv").addEventListener("click", function() {
         
         // Limpa 'R$' ou '%', remove pontos de milhar, troca vírgula decimal por ponto.
         cellText = cellText.replace('R$', '').replace('%', '').trim();
+        // A lógica abaixo garante que o formato numérico seja compatível com CSV
         cellText = cellText.split('.').join('').replace(',', '.'); 
         
         rowData.push(`"${cellText}"`);

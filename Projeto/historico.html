@@ -24,7 +24,7 @@
     <section class="historico-hero">
       <span class="hero-pill">Histórico</span>
       <h1>Histórico de Simulações</h1>
-      <p>Revise e exporte suas simulações salvas no navegador, com colunas organizadas e destaques de ganhos.</p>
+      <p>Revise e exporte suas simulações salvas no servidor, com colunas organizadas e destaques de ganhos.</p>
     </section>
 
     <section class="history-card">
@@ -34,7 +34,7 @@
           <h2 class="card-title">Tabela de simulações</h2>
         </div>
         <div class="history-meta">
-          <span class="badge-soft">Armazenado localmente</span>
+          <span class="badge-soft">Armazenado no Servidor</span>
           <span class="badge-soft">Atualiza em tempo real</span>
         </div>
       </div>
@@ -73,11 +73,10 @@
     </section>
   </main>
 
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-  <script src="./JS/export.js"></script>
-  <script src="./JS/historico.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="./JS/auth.js" type="module"></script>
+  <script src="./JS/export.js" type="module"></script>
+  <script src="./JS/historico.js" type="module"></script>
 
 </body>
 </html>
