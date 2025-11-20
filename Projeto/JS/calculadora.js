@@ -1,4 +1,4 @@
-// Projeto/JS/calculadora.js - Versão FINAL INTEGRADA (Com Correção de Consistência no Display)
+// Projeto/JS/calculadora.js - Versão FINAL INTEGRADA com Gráfico Otimizado
 
 import { API_URL_AUTH, setAuthToken } from './auth.js'; 
 
@@ -11,8 +11,40 @@ const taxas = {
   selic: 15.00,
   cdi: 14.90,
   ipca: 5.17,
-  poupança: 8.37 
+  poupança: 8.37 // Taxa usada para a linha de comparação
 };
+
+// =======================================================
+// FUNÇÃO AUXILIAR: CÁLCULO DA SÉRIE DA POUPANÇA (LOCAL)
+// =======================================================
+
+function calculateSavingsSeries(initialValue, monthlyAporte, months) {
+    const taxaAnualPoupança = taxas.poupança / 100;
+    // Fator mensal de capitalização
+    const fatorMensalPoupança = Math.pow(1 + taxaAnualPoupança, 1/12); 
+
+    let saldo = initialValue;
+    let totalAportadoAtual = initialValue;
+    // Ponto Inicial (Mês 0)
+    const series = [{ periodo: 0, saldo: initialValue, aportado: initialValue }];
+    
+    for (let i = 1; i <= months; i++) {
+        // Aplica a capitalização ao saldo existente
+        saldo *= fatorMensalPoupança;
+        
+        // Adiciona o novo aporte
+        saldo += monthlyAporte;
+        totalAportadoAtual += monthlyAporte;
+
+        series.push({
+            periodo: i,
+            saldo: saldo,
+            aportado: totalAportadoAtual
+        });
+    }
+    return series;
+}
+
 
 // =======================================================
 // INICIALIZAÇÃO E CHECK DE AUTENTICAÇÃO (Robusta)
@@ -20,14 +52,12 @@ const taxas = {
 (function() {
     const token = localStorage.getItem('token');
     
-    // Verifica se o token é nulo, undefined, ou uma string vazia/só de espaços
     const isNotAuthenticated = !token || (typeof token === 'string' && token.trim() === ''); 
 
     if (isNotAuthenticated) { 
         alert('Você precisa estar logado para acessar a calculadora. Redirecionando para a tela de Login.');
         window.location.href = 'login.html'; 
     } else {
-        // Se o token for válido, configura o Axios com ele
         setAuthToken(token);
     }
     
@@ -122,7 +152,6 @@ form.addEventListener("submit", async (e) => {
     const rentabilidade = cleanCurrency(document.getElementById("rentabilidade").value);
     
     let aporte = 0;
-    // O seu HTML possui um checkbox para aporte, então usamos a verificação correta:
     if (document.getElementById("check-aporte").checked) {
         aporte = cleanCurrency(document.getElementById("aporte-mensal").value);
     }
@@ -153,23 +182,19 @@ form.addEventListener("submit", async (e) => {
         const resultados = await calculateInvestment(requestData, 'nao'); 
         
         // 5. Mapeia os resultados do backend para o formato do frontend
-        // TRATAMENTO ROBUSTO: || 0 garante que a formatação não receba null/undefined.
         const vInicial = parseFloat(resultados.valorInicial || 0);
         const rendimentoB = parseFloat(resultados.rendimentoBruto || 0);
         const tempoDias = parseFloat(resultados.tempoDias || 0);
+        const meses = Math.floor(tempoDias / 30); // Número de meses para o gráfico/aporte
 
-        // Garante que todos os resultados do Backend sejam tratados como números
+
         const impostosTotais = parseFloat(resultados.impostoRenda || 0) + parseFloat(resultados.impostoIOF || 0);
         const valorFinalLiquido = parseFloat(resultados.lucroLiquido || 0);
-        const totalAportado = vInicial + (parseFloat(resultados.valorAporte || 0) * (tempoDias / 30).toFixed(0));
+        const totalAportado = parseFloat(resultados.totalCapitalAportado || vInicial);
         const lucroLiquidoReal = valorFinalLiquido - totalAportado; 
 
-        // CORREÇÃO FINAL: Garante que o Valor Final Bruto seja aritmeticamente consistente com os resultados
-        const valorFinalBrutoConsistente = valorFinalLiquido + impostosTotais;
-
         const mappedResults = {
-            // CORRIGIDO: Usa o valor Bruto que é consistente com o Valor Líquido
-            valorFinalBruto: valorFinalBrutoConsistente, 
+            valorFinalBruto: valorFinalLiquido + impostosTotais, 
             rendimentoBruto: rendimentoB, 
             impostoIR: parseFloat(resultados.impostoRenda || 0),
             impostoIOF: parseFloat(resultados.impostoIOF || 0),
@@ -184,12 +209,19 @@ form.addEventListener("submit", async (e) => {
         // 6. Renderiza o Resultado
         renderResultado(mappedResults);
         
-        // 7. Renderiza o Gráfico com série simplificada
-        const seriesSimples = [
-            { periodo: 'Início', patrimonio: totalAportado, aportado: totalAportado },
-            { periodo: `${mappedResults.tempoDiasTotal} dias (Final)`, patrimonio: mappedResults.valorFinalLiquido, aportado: totalAportado }
-        ];
-        renderChart(seriesSimples); 
+        // 7. Renderiza o Gráfico com todas as séries
+        const seriesData = {
+            investment: {
+                monthlySeries: resultados.monthlySeries && resultados.monthlySeries.length > 2 ? resultados.monthlySeries : null,
+                vInicial: vInicial,
+                vFinal: valorFinalLiquido,
+                totalAportado: totalAportado,
+                tempoDias: tempoDias
+            },
+            savings: calculateSavingsSeries(vInicial, aporte, meses) // Calculada localmente
+        };
+
+        renderChart(seriesData); 
         
         // 8. Habilita o botão de histórico
         lastHistoryData = mappedResults.payloadRequest;
@@ -270,13 +302,13 @@ function renderResultado(r) {
 }
 
 
-function renderChart(seriesData) {
+function renderChart(fullSeriesData) {
     const chartContainer = document.querySelector('#chart-section .form-container');
     const chartSection = document.getElementById("chart-section");
     
     if (typeof Chart === 'undefined') {
         chartSection.classList.remove('hidden');
-        chartContainer.innerHTML = '<p class="text-center" style="color: #ccc; padding: 20px;">ERRO: Biblioteca Chart.js não carregada. Adicione o script ao HTML para visualizar o gráfico.</p>';
+        chartContainer.innerHTML = '<p class="text-center" style="color: #ccc; padding: 20px;">ERRO: Biblioteca Chart.js não carregada.</p>';
         return; 
     }
     
@@ -285,88 +317,149 @@ function renderChart(seriesData) {
         chartInstance = null;
     }
 
+    // 1. Determina a série de investimento a ser usada
+    let investmentSeries = fullSeriesData.investment.monthlySeries;
+    let totalAportadoFinal = fullSeriesData.investment.totalAportado;
+    let finalValue = fullSeriesData.investment.vFinal;
+    let initialValue = fullSeriesData.investment.vInicial;
+    let tempoDias = fullSeriesData.investment.tempoDias;
+
+    // Se o Backend não retornar a série mensal, cria a série simples de 2 pontos
+    if (!investmentSeries || investmentSeries.length <= 2) {
+         investmentSeries = [
+            { periodo: 0, saldo: initialValue, aportado: initialValue },
+            { periodo: Math.floor(tempoDias / 30), saldo: finalValue, aportado: totalAportadoFinal }
+         ];
+    }
+    
+    const savingsSeries = fullSeriesData.savings;
+
     chartContainer.innerHTML = '<canvas id="patrimonio-chart"></canvas>';
     const chartCanvas = document.getElementById('patrimonio-chart');
     
     try {
-        const labels = seriesData.map(d => d.periodo);
-        const patrimonio = seriesData.map(d => d.patrimonio);
-        const aportado = seriesData.map(d => d.aportado);
+        // Labels do Eixo X: Mês 0, Mês 1, etc.
+        const labels = investmentSeries.map(d => {
+            if (d.periodo === 0) return 'Início';
+            if (d.periodo === Math.floor(tempoDias / 30)) return 'Fim';
+            return `Mês ${d.periodo}`;
+        });
+
+        // Data Points
+        const patrimonio = investmentSeries.map(d => d.saldo);
+        const aportado = investmentSeries.map(d => d.aportado);
+        const poupança = savingsSeries.map(d => d.saldo);
+        
+        const textColor = '#1d1d1f'; // Cor do texto do Chart.js (baseado no CSS)
+
+        const datasets = [
+            // 1. MEU PATRIMÔNIO (Investimento - Cor Forte)
+            {
+                label: 'Meu Patrimônio',
+                data: patrimonio,
+                borderColor: '#143158', 
+                backgroundColor: 'rgba(20, 49, 88, 0.1)',
+                fill: false,
+                tension: 0.3,
+                borderWidth: 3,
+                pointRadius: 3 
+            }, 
+            // 2. POUPANÇA (Comparativo - Cor Laranja/Destaque)
+            {
+                label: `Poupança (${taxas.poupança.toFixed(2)}% a.a.)`,
+                data: poupança,
+                borderColor: '#ff8c32', 
+                backgroundColor: 'rgba(255, 140, 50, 0.1)',
+                fill: false,
+                tension: 0.3,
+                borderWidth: 3,
+                pointRadius: 3
+            },
+            // 3. CAPITAL APORTADO (Cor Cinza, pontilhado)
+            {
+                label: 'Capital Aportado',
+                data: aportado,
+                borderColor: '#5a6170', // Muted color
+                backgroundColor: 'transparent',
+                fill: false,
+                borderDash: [5, 5],
+                tension: 0.0,
+                pointRadius: 0
+            }
+        ];
+
         
         chartInstance = new Chart(chartCanvas, {
             type: 'line',
-            data: {
-                labels: labels,
-                datasets: [
-                    {
-                        label: 'Patrimônio Total (Valor de Mercado)',
-                        data: patrimonio,
-                        borderColor: '#ffa533', 
-                        backgroundColor: 'rgba(255, 165, 51, 0.2)',
-                        fill: true,
-                        tension: 0.2
-                    }, 
-                    {
-                        label: 'Total Aportado (Capital Investido)',
-                        data: aportado,
-                        borderColor: '#007bff', 
-                        backgroundColor: 'rgba(0, 123, 255, 0.2)',
-                        fill: false,
-                        tension: 0.2
-                    }
-                ]
-            },
+            data: { labels, datasets },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index', 
+                    intersect: false,
+                },
                 scales: {
                     y: {
                         beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Valor (R$)',
-                            color: '#ccc'
-                        },
+                        title: { display: true, text: 'Valor (R$)', color: textColor },
                         ticks: {
-                            color: '#ccc'
+                            color: textColor,
+                            callback: function(value) { return 'R$ ' + value.toLocaleString('pt-BR'); }
                         },
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)',
-                            borderColor: 'rgba(255, 255, 255, 0.1)'
-                        }
+                        grid: { color: 'rgba(15, 31, 61, 0.05)' }
                     },
                     x: {
-                        title: {
-                            display: true,
-                            text: 'Período',
-                            color: '#ccc'
-                        },
+                        // FORÇA A ESCALA A SER CATEGORICAL para exibir rótulos de mês
+                        type: 'category', 
+                        title: { display: true, text: 'Período', color: textColor },
+                        
+                        // CORREÇÃO: Usando o callback para mostrar rótulos espaçados (Mês 6, Mês 12, etc.)
                         ticks: {
-                            color: '#ccc'
+                            color: textColor,
+                            callback: function(index, value) {
+                                // Exibe apenas a cada 6 meses, além de Início e Fim.
+                                const totalPoints = labels.length;
+                                const isStartOrEnd = index === 0 || index === totalPoints - 1;
+                                // Checa se o mês é múltiplo de 6, e ignora Início/Fim
+                                const isMultipleOfSix = (index % 6 === 0) && (index !== 0) && (index !== totalPoints - 1);
+
+                                if (isStartOrEnd || isMultipleOfSix) {
+                                    return labels[index];
+                                }
+                                return ''; 
+                            },
+                            maxRotation: 45, 
+                            minRotation: 45
                         },
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)',
-                            borderColor: 'rgba(255, 255, 255, 0.1)'
-                        }
+                        grid: { color: 'rgba(15, 31, 61, 0.05)' }
                     }
                 },
                 plugins: {
-                    legend: {
-                        labels: {
-                            color: '#fff' 
-                        }
-                    },
+                    legend: { labels: { color: textColor } },
                     tooltip: {
+                        enabled: true,
+                        usePointStyle: true, 
+                        backgroundColor: 'rgba(0, 0, 0, 0.85)',
+                        titleColor: '#fff',
+                        bodyColor: '#fff',
+                        borderWidth: 1,
+                        borderColor: '#ff8c32',
+
                         callbacks: {
+                            // Título do Tooltip (Mês X)
+                            title: function(tooltipItems) {
+                                return tooltipItems[0].label;
+                            },
+                            // Rótulo da linha (Ex: Meu Patrimônio: R$ 6.742,54)
                             label: function(context) {
                                 let label = context.dataset.label || '';
+                                const value = context.parsed.y;
+                                
                                 if (label) {
-                                    label += ': ';
+                                    return `${label}: R$ ${value.toFixed(2).replace('.', ',')}`;
                                 }
-                                if (context.parsed.y !== null) {
-                                    label += 'R$ ' + context.parsed.y.toFixed(2).replace('.', ',');
-                                }
-                                return label;
+                                return null;
                             }
                         }
                     }
@@ -380,7 +473,7 @@ function renderChart(seriesData) {
     } catch (e) {
         console.error("Erro ao renderizar o gráfico Chart.js:", e);
         chartSection.classList.remove('hidden');
-        chartContainer.innerHTML = '<p class="text-center" style="color: #ccc; padding: 20px;">Houve um erro interno ao gerar o gráfico. O cálculo funcionou, mas a visualização falhou. Verifique o console para detalhes.</p>';
+        chartContainer.innerHTML = '<p class="text-center" style="color: var(--text); padding: 20px;">Houve um erro interno ao gerar o gráfico. Verifique o console para detalhes.</p>';
         chartInstance = null;
         return;
     }
