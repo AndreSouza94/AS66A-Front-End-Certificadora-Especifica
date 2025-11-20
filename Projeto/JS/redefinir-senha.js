@@ -1,4 +1,4 @@
-// Projeto/JS/redefinir-senha.js - Versão final e integrada
+// Projeto/JS/redefinir-senha.js - Versão FINAL e Integrada
 
 import { resetPassword } from './auth.js'; 
 
@@ -19,20 +19,13 @@ document.addEventListener("DOMContentLoaded", () => {
         resetBtn.disabled = true;
     }
     
-    /**
-     * Exibe uma mensagem de status na tela.
-     */
     const displayStatus = (message, isSuccess = true) => {
         statusDiv.textContent = message;
         statusDiv.className = 'mt-3 text-center ' + (isSuccess ? 'success-message' : 'error-message');
     };
 
-    /**
-     * Função REAL de Redefinição de Senha.
-     */
     const resetPasswordIntegration = async (token, password) => {
         try {
-            // Chamada ao serviço centralizado
             const response = await resetPassword(token, password);
             return response;
             
@@ -58,19 +51,16 @@ document.addEventListener("DOMContentLoaded", () => {
         const newPassword = newPasswordInput.value;
         const confirmPassword = confirmPasswordInput.value;
 
-        // 1. Validação de Senha (mínimo de 6 caracteres)
         if (newPassword.length < 6) { 
              displayStatus("A nova senha deve ter pelo menos 6 caracteres.", false);
              return;
         }
 
-        // 2. Validação de Confirmação de Senha
         if (newPassword !== confirmPassword) {
             displayStatus("As senhas não coincidem. Verifique a digitação.", false);
             return;
         }
 
-        // 3. Validação do Token
         if (!token) {
              displayStatus("Erro: O token de segurança está ausente.", false);
              return;
@@ -84,7 +74,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             displayStatus('Senha redefinida com sucesso! Você será redirecionado para o Login.', true);
             
-            // Redireciona para o login após 3 segundos
             setTimeout(() => {
                 window.location.href = 'login.html'; 
             }, 3000); 

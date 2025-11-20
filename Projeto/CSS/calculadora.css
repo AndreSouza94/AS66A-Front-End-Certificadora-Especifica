@@ -169,14 +169,13 @@ body.calc-page {
 
 
 
-/* ===== GRID PRINCIPAL (LADO A LADO) ===== */
 
  .side-by-side-layout {
      display: grid;
      grid-template-columns: 1fr; /* Padrão Mobile: 1 coluna */
      gap: 24px;
      margin-top: 36px;
-     align-items: stretch; /* Alinha o topo dos cards */
+     align-items: stretch; /* Garante que os cards estiquem à altura */
      justify-items: center;
  }
 
@@ -186,17 +185,9 @@ body.calc-page {
 
     .side-by-side-layout {
 
-        /* Coluna Esquerda (Formulário) : Coluna Direita (Resultados) */
-
-        grid-template-columns: 1fr;
-
+        grid-template-columns: minmax(420px, 0.95fr) minmax(420px, 1.25fr); 
+        justify-items: stretch; /* Permite que as colunas ocupem 100% da largura */
     }
-
-
-
-     .side-by-side-layout.show-results {
-         grid-template-columns: minmax(420px, 0.95fr) minmax(680px, 1.25fr);
-     }
 
 }
 
@@ -287,13 +278,13 @@ body.calc-page {
 
 
 
-/* ESTILO NOVO PARA AS DATAS (Layout de duas colunas) */
+
 
 .form-grupo-datas {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
-  align-items: end; /* garante alinhamento dos campos na base */
+  align-items: end; 
   margin-bottom: 16px;
 }
 
@@ -368,7 +359,7 @@ input, select {
 
 }
 
-/* Estilo para setinha do select */
+
 
 select {
 
@@ -384,7 +375,7 @@ select {
 
 
 
-/* NOVO: Estilo para as opções dentro do SELECT */
+
 
 select option {
 
@@ -398,7 +389,7 @@ select option {
 
 
 
-/* NOVO: Melhora o contraste da opção selecionada */
+
 
 select option:checked {
 
@@ -410,7 +401,7 @@ select option:checked {
 
 
 
-/* NOVO: Melhora o estilo de hover no dropdown */
+
 
 select option:hover {
 
@@ -482,14 +473,14 @@ input:focus, select:focus {
     transition: 0.3s ease;
 }
 
-/* Estilo para o checkbox marcado */
+
 .checkbox-grupo input[type="checkbox"]:checked {
 
     background-color: var(--primary);
     border-color: var(--primary);
 }
 
-/* Estilo para o texto ao lado do checkbox */
+
 .checkbox-label {
 
     margin-bottom: 0 !important;
@@ -498,7 +489,7 @@ input:focus, select:focus {
     cursor: pointer;
 }
 
-/* Estilo do checkbox quando está selecionado e o usuário passa o mouse sobre ele */
+
 .checkbox-grupo input[type="checkbox"]:hover {
 
     border-color: var(--primary);
@@ -733,7 +724,7 @@ input:focus, select:focus {
 
 .chart-section {
 
-    margin-top: 30px; /* Espaçamento entre o layout lado a lado e o gráfico */
+    margin-top: 30px; 
 
     margin-bottom: 30px;
 

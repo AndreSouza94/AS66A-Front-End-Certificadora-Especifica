@@ -1,3 +1,5 @@
+// Projeto/JS/calculadora.js - Versão FINAL INTEGRADA (Com Correção de Consistência no Display)
+
 import { API_URL_AUTH, setAuthToken } from './auth.js'; 
 
 // Variável global para armazenar a instância do gráfico
@@ -13,7 +15,7 @@ const taxas = {
 };
 
 // =======================================================
-// INICIALIZAÇÃO E CHECK DE AUTENTICAÇÃO 
+// INICIALIZAÇÃO E CHECK DE AUTENTICAÇÃO (Robusta)
 // =======================================================
 (function() {
     const token = localStorage.getItem('token');
@@ -33,18 +35,15 @@ const taxas = {
 
 
 // =======================================================
-// FUNÇÕES DE SERVIÇO PARA CÁLCULO E SALVAMENTO
+// FUNÇÕES DE SERVIÇO PARA CÁLCULO E SALVAMENTO (CHAMADA REAL)
 // =======================================================
 
 /**
  * Chama o endpoint POST /calcular do backend.
- * @param {object} data - Dados da simulação.
- * @param {string} shouldSave - 'sim' ou 'nao'.
  */
 const calculateInvestment = async (data, shouldSave = 'nao') => {
     const endpoint = `${API_URL_AUTH}/calcular`; 
     
-    // Adiciona os campos opcionais ao payload
     const payload = {
         ...data,
         salvarHistorico: shouldSave 
@@ -52,14 +51,13 @@ const calculateInvestment = async (data, shouldSave = 'nao') => {
     
     try {
         const response = await axios.post(endpoint, payload);
-        // O backend retorna o objeto de simulação/histórico dentro de .msg
         return response.data.msg; 
     } catch (error) {
-        let message = "Erro ao realizar o cálculo. Verifique os dados.";
+        let message = "Erro de conexão ao calcular. Verifique o Backend.";
         if (error.response && error.response.data && error.response.data.msg) {
              message = error.response.data.msg; 
         } else if (error.message.includes("Network")) {
-             message = "Falha de rede. Verifique se o Backend Node.js está ativo ou se você está autenticado (Token inválido).";
+             message = "Falha de rede. Verifique se o Backend Node.js está ativo.";
         }
         throw new Error(message);
     }
@@ -71,22 +69,23 @@ const calculateInvestment = async (data, shouldSave = 'nao') => {
 // =======================================================
 function cleanCurrency(value) {
     if (typeof value !== 'string') return parseFloat(value) || 0;
-    // Remove pontos de milhar e troca vírgula decimal por ponto
     return parseFloat(value.replace(/\./g, '').replace(',', '.')) || 0;
 }
 
 
 // =======================================================
-// LÓGICA DO FORMULÁRIO (CHAMADA AO BACKEND)
+// LÓGICA DO FORMULÁRIO (CHAMADA REAL AO BACKEND)
 // =======================================================
 const form = document.getElementById("form-calculadora");
 const resultadoContainer = document.getElementById("resultado-container");
 const chartSection = document.getElementById("chart-section");
-const inputRentabilidade = document.getElementById("rentabilidade");
+const historyWrapper = document.getElementById("history-wrapper"); 
+const addHistoryBtn = document.getElementById("addHistoryBtn"); 
+
+// Referências de input para eventos
 const inputAporteMensal = document.getElementById("aporte-mensal");
 const checkAporte = document.getElementById("check-aporte");
 const grupoAporte = document.getElementById("grupo-aporte");
-const addHistoryBtn = document.getElementById("addHistoryBtn"); 
 
 
 checkAporte.addEventListener('change', () => {
@@ -106,25 +105,26 @@ inputAporteMensal.addEventListener('blur', (e) => {
 });
 
 
-// === LISTENER: SUBMISSÃO DO FORMULÁRIO (APENAS CALCULA E EXIBE) ===
+// === LISTENER: SUBMISSÃO DO FORMULÁRIO (CHAMADA REAL) ===
 form.addEventListener("submit", async (e) => {
     e.preventDefault();
     
-    // Reseta o estado
     lastHistoryData = null;
     addHistoryBtn.classList.add('hidden'); 
+    if (historyWrapper) historyWrapper.classList.add('hidden'); 
     chartSection.classList.add('hidden'); 
 
-    // Pega e limpa os dados
+    // Pega os dados dos campos (acessando diretamente no momento da submissão)
     const tipo = document.getElementById("tipo").value;
     const valorInicial = cleanCurrency(document.getElementById("valor").value);
     const dataInicialStr = document.getElementById("data-inicial").value;
     const dataFinalStr = document.getElementById("data-final").value;
-    const rentabilidade = cleanCurrency(inputRentabilidade.value);
+    const rentabilidade = cleanCurrency(document.getElementById("rentabilidade").value);
     
     let aporte = 0;
-    if (checkAporte.checked) {
-        aporte = cleanCurrency(inputAporteMensal.value);
+    // O seu HTML possui um checkbox para aporte, então usamos a verificação correta:
+    if (document.getElementById("check-aporte").checked) {
+        aporte = cleanCurrency(document.getElementById("aporte-mensal").value);
     }
 
     if (new Date(dataInicialStr) >= new Date(dataFinalStr)) {
@@ -132,7 +132,6 @@ form.addEventListener("submit", async (e) => {
         return;
     }
     
-    // Prepara os dados (enviando datas como Timestamps e aporte)
     const dataInicialTimestamp = new Date(dataInicialStr).getTime();
     const dataFinalTimestamp = new Date(dataFinalStr).getTime();
 
@@ -150,25 +149,30 @@ form.addEventListener("submit", async (e) => {
     calcularBtn.textContent = 'Calculando...';
 
     try {
-        // 4. Executa a Simulação (Chamada ao Backend, sem salvar)
-        const resultados = await calculateInvestment(requestData, 'nao'); // shouldSave = 'nao'
+        // 4. Executa a Simulação (Chamada REAL ao Backend)
+        const resultados = await calculateInvestment(requestData, 'nao'); 
         
         // 5. Mapeia os resultados do backend para o formato do frontend
-        const vInicial = parseFloat(resultados.valorInicial);
-        const rendimentoB = parseFloat(resultados.rendimentoBruto);
-        const tempoDias = resultados.tempoDias;
+        // TRATAMENTO ROBUSTO: || 0 garante que a formatação não receba null/undefined.
+        const vInicial = parseFloat(resultados.valorInicial || 0);
+        const rendimentoB = parseFloat(resultados.rendimentoBruto || 0);
+        const tempoDias = parseFloat(resultados.tempoDias || 0);
 
-        // O backend retorna os valores já calculados e líquidos
-        const impostosTotais = resultados.impostoRenda + resultados.impostoIOF;
-        const valorFinalLiquido = resultados.lucroLiquido; // O lucroLiquido do backend é o valor Final Liquido
-        const totalAportado = vInicial + (resultados.valorAporte * (tempoDias / 30).toFixed(0));
+        // Garante que todos os resultados do Backend sejam tratados como números
+        const impostosTotais = parseFloat(resultados.impostoRenda || 0) + parseFloat(resultados.impostoIOF || 0);
+        const valorFinalLiquido = parseFloat(resultados.lucroLiquido || 0);
+        const totalAportado = vInicial + (parseFloat(resultados.valorAporte || 0) * (tempoDias / 30).toFixed(0));
         const lucroLiquidoReal = valorFinalLiquido - totalAportado; 
 
+        // CORREÇÃO FINAL: Garante que o Valor Final Bruto seja aritmeticamente consistente com os resultados
+        const valorFinalBrutoConsistente = valorFinalLiquido + impostosTotais;
+
         const mappedResults = {
-            valorFinalBruto: vInicial + rendimentoB, 
+            // CORRIGIDO: Usa o valor Bruto que é consistente com o Valor Líquido
+            valorFinalBruto: valorFinalBrutoConsistente, 
             rendimentoBruto: rendimentoB, 
-            impostoIR: resultados.impostoRenda,
-            impostoIOF: resultados.impostoIOF,
+            impostoIR: parseFloat(resultados.impostoRenda || 0),
+            impostoIOF: parseFloat(resultados.impostoIOF || 0),
             taxas: 0, 
             valorFinalLiquido: valorFinalLiquido, 
             lucroLiquido: lucroLiquidoReal, 
@@ -182,24 +186,34 @@ form.addEventListener("submit", async (e) => {
         
         // 7. Renderiza o Gráfico com série simplificada
         const seriesSimples = [
-            { periodo: 'Início', patrimonio: vInicial, aportado: vInicial },
-            { periodo: `${tempoDias} dias (Final)`, patrimonio: mappedResults.valorFinalLiquido, aportado: totalAportado }
+            { periodo: 'Início', patrimonio: totalAportado, aportado: totalAportado },
+            { periodo: `${mappedResults.tempoDiasTotal} dias (Final)`, patrimonio: mappedResults.valorFinalLiquido, aportado: totalAportado }
         ];
         renderChart(seriesSimples); 
         
-        // 8. Armazena os dados do último cálculo e exibe o botão de salvar
+        // 8. Habilita o botão de histórico
         lastHistoryData = mappedResults.payloadRequest;
+        if (historyWrapper) historyWrapper.classList.remove('hidden');
         addHistoryBtn.classList.remove('hidden'); 
         
     } catch (error) {
         alert(`Erro ao calcular: ${error.message}`);
+        
+        // Limpa a tela de resultados no Frontend em caso de falha
+        document.getElementById("res-bruto").textContent = 'R$ 0,00';
+        document.getElementById("res-rendimento-bruto").textContent = 'R$ 0,00';
+        document.getElementById("res-imposto").textContent = 'R$ 0,00';
+        document.getElementById("res-liquido").textContent = 'R$ 0,00';
+        document.getElementById("res-lucro-liquido").textContent = 'R$ 0,00';
+        document.getElementById("res-percentual").textContent = '0,00%';
+
     } finally {
         calcularBtn.disabled = false;
         calcularBtn.textContent = 'Calcular';
     }
 });
 
-// === LISTENER: ADICIONAR AO HISTÓRICO (FAZ REQUISIÇÃO DE SALVAMENTO) ===
+// === LISTENER: ADICIONAR AO HISTÓRICO (CHAMADA REAL) ===
 if (addHistoryBtn) {
     addHistoryBtn.addEventListener('click', async () => {
         if (!lastHistoryData) {
@@ -211,11 +225,11 @@ if (addHistoryBtn) {
         addHistoryBtn.textContent = 'Salvando...';
 
         try {
-            // Re-executa a requisição, mas com shouldSave = 'sim'
             await calculateInvestment(lastHistoryData, 'sim'); 
             
             alert('Simulação salva no Histórico com sucesso!');
-            addHistoryBtn.classList.add('hidden'); // Oculta após salvar
+            addHistoryBtn.classList.add('hidden'); 
+            if (historyWrapper) historyWrapper.classList.add('hidden');
 
         } catch (error) {
             alert(`Erro ao salvar histórico: ${error.message}`);
@@ -231,8 +245,16 @@ if (addHistoryBtn) {
  * Renderiza os resultados numéricos.
  */
 function renderResultado(r) {
-    const formatCurrency = (value) => value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-    const formatPercent = (value) => r.percentual.toFixed(2).replace('.', ',') + '%';
+    const formatCurrency = (value) => {
+        const numberValue = parseFloat(value);
+        if (isNaN(numberValue)) return 'R$ 0,00';
+        return numberValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    };
+    const formatPercent = (value) => {
+        const numberValue = parseFloat(value);
+        if (isNaN(numberValue)) return '0,00%';
+        return numberValue.toFixed(2).replace('.', ',') + '%';
+    };
     
     const impostosTotais = r.impostoIR + r.impostoIOF + r.taxas; 
     
@@ -252,7 +274,6 @@ function renderChart(seriesData) {
     const chartContainer = document.querySelector('#chart-section .form-container');
     const chartSection = document.getElementById("chart-section");
     
-    // ... (Lógica de renderização de gráfico, garantindo que o gráfico seja exibido) ...
     if (typeof Chart === 'undefined') {
         chartSection.classList.remove('hidden');
         chartContainer.innerHTML = '<p class="text-center" style="color: #ccc; padding: 20px;">ERRO: Biblioteca Chart.js não carregada. Adicione o script ao HTML para visualizar o gráfico.</p>';
@@ -299,10 +320,56 @@ function renderChart(seriesData) {
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: {
-                    // ... (Configurações de escala)
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Valor (R$)',
+                            color: '#ccc'
+                        },
+                        ticks: {
+                            color: '#ccc'
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)',
+                            borderColor: 'rgba(255, 255, 255, 0.1)'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Período',
+                            color: '#ccc'
+                        },
+                        ticks: {
+                            color: '#ccc'
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)',
+                            borderColor: 'rgba(255, 255, 255, 0.1)'
+                        }
+                    }
                 },
                 plugins: {
-                    // ... (Configurações de plugin)
+                    legend: {
+                        labels: {
+                            color: '#fff' 
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y !== null) {
+                                    label += 'R$ ' + context.parsed.y.toFixed(2).replace('.', ',');
+                                }
+                                return label;
+                            }
+                        }
+                    }
                 }
             }
         });
@@ -318,7 +385,6 @@ function renderChart(seriesData) {
         return;
     }
 }
-
 
 function renderTaxas() {
   const taxasContainer = document.getElementById("taxas-container");

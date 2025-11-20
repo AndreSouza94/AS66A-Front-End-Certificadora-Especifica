@@ -1,4 +1,4 @@
-// Projeto/JS/historico.js - Versão final e integrada
+// Projeto/JS/historico.js - Versão FINAL e Integrada
 
 import { API_URL_AUTH, setAuthToken } from './auth.js'; 
 
@@ -6,10 +6,9 @@ import { API_URL_AUTH, setAuthToken } from './auth.js';
 const removeSelectedBtn = document.getElementById('removeSelected');
 
 document.addEventListener('DOMContentLoaded', () => {
-    const userId = localStorage.getItem('idUsuario');
     const token = localStorage.getItem('token');
+    const userId = localStorage.getItem('idUsuario');
     
-    // Verifica se o token é nulo, undefined, ou uma string vazia/só de espaços
     const isNotAuthenticated = !token || (typeof token === 'string' && token.trim() === ''); 
 
     if (!userId || isNotAuthenticated) {
@@ -21,20 +20,17 @@ document.addEventListener('DOMContentLoaded', () => {
     setAuthToken(token);
     loadHistory();
 
-    // HABILITANDO função de Remoção
     if (removeSelectedBtn) {
         removeSelectedBtn.disabled = false; 
         removeSelectedBtn.textContent = 'Remover Selecionados';
         removeSelectedBtn.addEventListener('click', removeSelectedSimulations);
     }
     
-    // Event listener for Select All Checkbox... 
     const selectAllCheckbox = document.getElementById('selectAll');
     if (selectAllCheckbox) {
         selectAllCheckbox.addEventListener('change', toggleSelectAll);
     }
     
-    // Adiciona listener para a tabela para lidar com checkboxes individuais... 
     document.getElementById('investmentTable').addEventListener('change', (e) => {
         if (e.target.classList.contains('row-select')) {
             updateSelectAllState();
@@ -68,7 +64,7 @@ const deleteHistoryItem = async (idHistorico) => {
     try {
         const response = await axios.delete(endpoint, {
             data: { 
-                idHistorico: idHistorico, // O backend espera o campo idHistorico
+                idHistorico: idHistorico, 
                 deletarTudo: 'nao' 
             } 
         });
@@ -122,7 +118,7 @@ async function removeSelectedSimulations() {
     } catch (error) {
         alert(`Erro geral na remoção: ${error.message}`);
     } finally {
-        loadHistory(); // Recarrega e renderiza a tabela atualizada
+        loadHistory(); 
         removeBtn.disabled = false;
         removeBtn.textContent = 'Remover Selecionados';
     }
@@ -145,14 +141,13 @@ async function loadHistory() {
         const endpoint = `${API_URL_AUTH}/historico`; // GET /api/auth/historico 
         const response = await axios.get(endpoint);
         
-        // O backend retorna um objeto { msg: historicoUsuario[] }
         const userHistory = response.data.msg; 
         
         renderTable(userHistory);
         
     } catch (error) {
         const errorMsg = (error.response && error.response.data && error.response.data.msg) 
-                         ? error.response.data.msg : 'Erro de conexão ou token inválido.';
+                         ? error.response.data.msg : 'Erro de conexão ou token inválido. Por favor, ligue o Backend.';
         const errorRow = `<tr><td colspan="13" class="text-center error-text">Falha ao carregar histórico: ${errorMsg}</td></tr>`;
         tableBody.innerHTML = errorRow;
         console.error("Erro ao buscar histórico:", error.response || error);
@@ -183,7 +178,7 @@ function renderTable(simulations) {
         const rendimentoBruto = parseFloat(sim.rendimentoBruto || 0);
         const impostoIR = parseFloat(sim.impostoRenda || 0);
         const impostoIOF = parseFloat(sim.impostoIOF || 0);
-        const lucroLiquidoFinal = parseFloat(sim.lucroLiquido || 0); // É o valor final líquido (Valor Inicial + Lucro)
+        const lucroLiquidoFinal = parseFloat(sim.lucroLiquido || 0); 
         
         const totalAportado = valorInicial + (parseFloat(sim.valorAporte || 0) * (parseFloat(sim.tempoDias) / 30).toFixed(0));
         const lucroReal = lucroLiquidoFinal - totalAportado;
@@ -210,7 +205,6 @@ function renderTable(simulations) {
             <td class="text-center">${formatPercent(percentual)}</td>
         `;
         
-        // Aplica cores de lucro/prejuízo
         const lucroCell = row.cells[11]; 
         const percentualCell = row.cells[12]; 
 
@@ -226,9 +220,6 @@ function renderTable(simulations) {
     updateSelectAllState();
 }
 
-/**
- * Controla o checkbox 'Selecionar Todos'.
- */
 function toggleSelectAll(event) {
     const isChecked = event.target.checked;
     document.querySelectorAll('#investmentTable .row-select').forEach(checkbox => {
@@ -236,9 +227,6 @@ function toggleSelectAll(event) {
     });
 }
 
-/**
- * Atualiza o estado do checkbox 'Selecionar Todos' baseado nos checkboxes das linhas.
- */
 function updateSelectAllState() {
     const allRows = document.querySelectorAll('#investmentTable .row-select');
     const selectedRows = document.querySelectorAll('#investmentTable .row-select:checked');

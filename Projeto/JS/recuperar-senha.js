@@ -1,4 +1,4 @@
-// Projeto/JS/recuperar-senha.js - Versão final e integrada
+// Projeto/JS/recuperar-senha.js - Versão FINAL e Integrada
 
 import { forgotPassword } from './auth.js'; 
 
@@ -8,25 +8,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const statusDiv = document.getElementById("statusMessage");
     const sendBtn = document.getElementById("sendRecoveryBtn");
 
-    /**
-     * Exibe uma mensagem de status na tela.
-     */
     const displayStatus = (message, isSuccess = true) => {
         statusDiv.textContent = message;
         statusDiv.className = 'mt-3 text-center ' + (isSuccess ? 'success-message' : 'error-message');
     };
     
-    /**
-     * Limpa a mensagem de status.
-     */
     const clearStatus = () => {
         statusDiv.textContent = '';
         statusDiv.className = 'mt-3 text-center';
     };
 
-    /**
-     * Função REAL de Recuperação de Senha.
-     */
     const forgotPasswordIntegration = async (email) => {
         try {
             // Chamada ao serviço centralizado
