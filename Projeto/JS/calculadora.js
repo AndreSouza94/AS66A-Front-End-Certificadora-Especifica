@@ -122,17 +122,17 @@ checkAporte.addEventListener('change', () => {
     if (checkAporte.checked) {
         grupoAporte.classList.remove('hidden');
         inputAporteMensal.disabled = false;
-        inputAporteMensal.value = '0,00'; 
+        inputAporteMensal.value = '0'; 
     } else {
         grupoAporte.classList.add('hidden');
         inputAporteMensal.disabled = true;
-        inputAporteMensal.value = '0,00'; 
+        inputAporteMensal.value = '0'; 
     }
 });
 
-inputAporteMensal.addEventListener('blur', (e) => {
+/*inputAporteMensal.addEventListener('blur', (e) => {
     e.target.value = cleanCurrency(e.target.value).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-});
+});*/
 
 
 // === LISTENER: SUBMISSÃO DO FORMULÁRIO (CHAMADA REAL) ===
@@ -146,14 +146,17 @@ form.addEventListener("submit", async (e) => {
 
     // Pega os dados dos campos (acessando diretamente no momento da submissão)
     const tipo = document.getElementById("tipo").value;
-    const valorInicial = cleanCurrency(document.getElementById("valor").value);
+    // CORREÇÃO: Usar parseFloat diretamente para campos type="number" para aceitar dot-decimal (14.02)
+    const valorInicial = parseFloat(document.getElementById("valor").value) || 0;
     const dataInicialStr = document.getElementById("data-inicial").value;
     const dataFinalStr = document.getElementById("data-final").value;
-    const rentabilidade = cleanCurrency(document.getElementById("rentabilidade").value);
+    // CORREÇÃO: Usar parseFloat diretamente para campos type="number" (Rentabilidade)
+    const rentabilidade = parseFloat(document.getElementById("rentabilidade").value) || 0;
     
     let aporte = 0;
     if (document.getElementById("check-aporte").checked) {
-        aporte = cleanCurrency(document.getElementById("aporte-mensal").value);
+        // CORREÇÃO: Usar parseFloat diretamente para campos type="number" (Aporte Mensal)
+        aporte = parseFloat(document.getElementById("aporte-mensal").value) || 0;
     }
 
     if (new Date(dataInicialStr) >= new Date(dataFinalStr)) {

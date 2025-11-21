@@ -1,4 +1,4 @@
-export const API_URL_AUTH = 'http://localhost:3000/api/auth'; 
+export const API_URL_AUTH = 'https://as66a-backend-certificadora-especifica.onrender.com/api/auth'; 
 
 /**
  * Configura ou remove o token JWT no cabeçalho de todas as requisições Axios.
