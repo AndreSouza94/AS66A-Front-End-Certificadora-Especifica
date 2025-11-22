@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;600&family=Poppins:wght@600;700&family=Roboto:wght@400;500;700&display=swap');
 
-/* ===== RESET BÁSICO ===== */
 
 * {
 
@@ -53,8 +52,6 @@ body.calc-page {
 
 
 
-/* ===== CONTAINER PRINCIPAL ===== */
-
 .container {
 
   width: 100%;
@@ -105,7 +102,6 @@ body.calc-page {
 
 
 
-/* ===== CARDS DE TAXAS (MANTIDO) ===== */
 
 .taxas-container {
 
@@ -172,10 +168,10 @@ body.calc-page {
 
  .side-by-side-layout {
      display: grid;
-     grid-template-columns: 1fr; /* Padrão Mobile: 1 coluna */
+     grid-template-columns: 1fr; 
      gap: 24px;
      margin-top: 36px;
-     align-items: stretch; /* Garante que os cards estiquem à altura */
+     align-items: stretch; 
      justify-items: center;
  }
 
@@ -186,7 +182,7 @@ body.calc-page {
     .side-by-side-layout {
 
         grid-template-columns: minmax(420px, 0.95fr) minmax(420px, 1.25fr); 
-        justify-items: stretch; /* Permite que as colunas ocupem 100% da largura */
+        justify-items: stretch; 
     }
 
 }
@@ -222,7 +218,6 @@ body.calc-page {
 
 
 
-/* ===== FORM  ===== */
 
 .form-container {
 
@@ -236,7 +231,7 @@ body.calc-page {
 
   margin-bottom: 0;
 
-  text-align: left; /* Garante que o texto dentro do formulário não seja centralizado */
+  text-align: left; 
 
   max-width: 500px;
 
@@ -262,7 +257,7 @@ body.calc-page {
 
   color: var(--highlight);
 
-  text-align: center; /* Centraliza títulos dentro dos cards */
+  text-align: center;
 
 }
 
@@ -415,7 +410,7 @@ select option:hover {
 
 
 
-/* Estiliza o placeholder para melhor visibilidade */
+
 
 input::placeholder {
 
@@ -437,7 +432,7 @@ input:focus, select:focus {
 
 
 
-/* Estilo para o campo desabilitado */
+
 
 #grupo-aporte input:disabled {
 
@@ -453,7 +448,7 @@ input:focus, select:focus {
 
 
 
-/* Estilos para o Checkbox NOVO */
+
 .checkbox-grupo {
 
     display: flex;
@@ -510,7 +505,6 @@ input:focus, select:focus {
 
 
 
-/* Classe utilitária para esconder elementos */
 
 .hidden {
 
@@ -614,13 +608,13 @@ input:focus, select:focus {
 
 
 
-/* ===== RESULTADOS (MANTIDO) ===== */
+
 
 .resultado-container {
 
   margin-top: 0;
 
-  /* Aplica o mesmo estilo de card para resultados e gráfico */
+
 
   background: #ffffff;
 
@@ -720,7 +714,7 @@ input:focus, select:focus {
 
 
 
-/* ===== GRÁFICO (CHART-SECTION) ===== */
+
 
 .chart-section {
 

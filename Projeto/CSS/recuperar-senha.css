@@ -1,17 +1,14 @@
 main .card-container {
-    /* Desativa a perspectiva do flip-card, mantendo-o como um card centralizado */
     perspective: none; 
 }
 
 main .form-side {
-    /* Ajusta a altura mínima para acomodar o conteúdo de recuperação/redefinição */
     height: auto; 
-    min-height: 400px; /* Acomoda os dois campos de senha da tela de Redefinição */
+    min-height: 400px; 
     position: relative; 
     transform: none; 
 }
 
-/* Estilo para a mensagem de status (Sucesso/Erro) */
 #statusMessage {
     font-size: 14px;
     padding: 10px;
@@ -20,14 +17,14 @@ main .form-side {
 }
 
 .success-message {
-    color: #155724; /* Verde escuro */
-    background-color: #d4edda; /* Fundo verde claro */
+    color: #155724; 
+    background-color: #d4edda; 
     border: 1px solid #c3e6cb;
 }
 
 .error-message {
-    color: #721c24; /* Vermelho escuro */
-    background-color: #f8d7da; /* Fundo vermelho claro */
+    color: #721c24; 
+    background-color: #f8d7da; 
     border: 1px solid #f5c6cb;
 }
 
@@ -36,7 +33,7 @@ main .form-side {
 }
 
 #sendRecoveryBtn:disabled,
-#resetPasswordBtn:disabled { /* Aplica o estilo de desabilitado aos dois botões */
+#resetPasswordBtn:disabled { 
     opacity: 0.7;
     cursor: not-allowed;
 }

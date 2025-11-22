@@ -1,6 +1,4 @@
-/* ======================================== */
-/* ESTRUTURA E CONTAINER GERAL */
-/* ======================================== */
+
 
 .faq-container {
     max-width: 900px;
@@ -36,15 +34,13 @@
     font-weight: 600;
 }
 
-/* ======================================== */
-/* ESTILO DO ACORDEÃO (ITEM) */
-/* ======================================== */
+
 
 .accordion-item {
     border: 1px solid #DDDDDD;
     margin-bottom: 10px;
     border-radius: 6px;
-    overflow: hidden; /* Garante o efeito de deslizar */
+    overflow: hidden; 
 }
 
 .accordion-header {
@@ -70,7 +66,7 @@
     transform: translateY(-1px);
 }
 
-/* Estilo para o cabeçalho ATIVO (aberto) */
+
 .accordion-header.active {
     background-color: #e8efff;
     color: #0f1f3d;
@@ -85,12 +81,12 @@
     transition: transform 0.3s;
 }
 
-/* Rotação do ícone '+' para fechar quando ativo */
+
 .accordion-header.active .icon {
     transform: rotate(45deg); 
 }
 
-/* Container que esconde/mostra a resposta */
+
 .accordion-content {
     padding: 0 20px;
     background-color: #FFFFFF;
@@ -105,16 +101,11 @@
     margin: 0;
     line-height: 1.6;
     color: #555555;
-    /* Linha de separação interna do conteúdo (opcional) */
     border-top: 1px solid #EEEEEE; 
 }
 
-/* ======================================== */
-/* AJUSTE DO CTA NA HOMEPAGE (index.html) */
-/* ======================================== */
 
 .btn-secondary {
-    /* Garante que o CTA do FAQ e Comparação tenham o mesmo estilo secundário */
     background-color: white;
     color: #0f1f3d;
     border: 1px solid #0f1f3d;
@@ -131,5 +122,5 @@
 
 .link-faq {
     margin-left: 10px;
-    font-size: 1em; /* Ajusta o tamanho do link Dúvidas */
+    font-size: 1em;
 }

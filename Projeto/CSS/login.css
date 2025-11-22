@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;600&family=Poppins:wght@600;700&family=Roboto:wght@400;500;700&display=swap');
 
-/* ==== RESET E BASE ==== */
+
 * {
   margin: 0;
   padding: 0;
@@ -27,7 +27,7 @@ body {
 }
 
 
-/* ==== HEADER ==== */
+
 .site-header {
   position: fixed;
   top: 0;
@@ -61,14 +61,14 @@ body {
   box-shadow: 0 12px 26px rgba(15, 31, 61, 0.18);
 }
 
-/* ==== FORM LOGIN/CARD ==== */
+
 main {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: calc(100vh - 200px);
   padding: 100px 20px 60px;
-  margin-bottom: 120px; /* altura aproximada do footer */
+  margin-bottom: 120px; 
 }
 
 .btn-primary {
@@ -100,14 +100,14 @@ main {
   width: 100%;
 }
 
-/* Centralizar textos */
+
 .card-flip h3 {
   text-align: center;
   font-weight: 600;
   margin-bottom: 20px;
 }
 
-/* Ajustar espaçamento dos parágrafos */
+
 .card-flip p {
   font-size: 14px;
   text-align: center;
@@ -130,10 +130,10 @@ main {
 }
 
 
-/* ==== FOOTER ==== */
+
 footer {
-  background: #111827;   /* Preto */
-  color: #f9fafb;        /* Texto branco */
+  background: #111827;   
+  color: #f9fafb;       
   text-align: center;
   padding: 8px 16px;
   font-size: 13px;
