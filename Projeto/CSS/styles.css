@@ -30,7 +30,7 @@ body {
 
 
 .main-content {
-  background: linear-gradient(180deg, rgba(246, 248, 252, 0.78) 0%, rgba(255, 255, 255, 0.86) 68%),
+  background: linear-gradient(180deg, rgba(15, 31, 61, 0.14) 0%, rgba(255, 255, 255, 0.72) 30%),
     url('../image/back.jpg') center/cover no-repeat;
   color: var(--text);
   padding: 40px 20px;
@@ -161,6 +161,8 @@ body {
   font-family: var(--heading-font);
   margin-bottom: 16px;
   line-height: 1.2;
+  color: var(--text);
+  
 }
 
 .hero-text h2 span {
@@ -169,7 +171,7 @@ body {
 
 .hero-text p {
   font-size: 18px;
-  color: var(--muted);
+  color: #cccccc ;
   margin-bottom: 20px;
 }
 

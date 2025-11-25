@@ -15,7 +15,7 @@
 body {
   margin: 0;
   font-family: var(--body-font);
-  background: linear-gradient(180deg, rgba(246, 248, 252, 0.92) 0%, rgba(255, 255, 255, 0.96) 100%),
+  background: linear-gradient(180deg, rgba(15, 31, 61, 0.14) 0%, rgba(255, 255, 255, 0.72) 30%),
     url('../image/back.jpg') center/cover no-repeat;
   color: var(--text);
 }
