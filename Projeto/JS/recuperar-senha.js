@@ -1,5 +1,3 @@
-// Projeto/JS/recuperar-senha.js - Versão FINAL e Integrada
-
 import { forgotPassword } from './auth.js'; 
 
 document.addEventListener("DOMContentLoaded", () => {

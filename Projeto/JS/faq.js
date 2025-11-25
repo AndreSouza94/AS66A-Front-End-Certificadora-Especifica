@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Seleciona todos os botões que são os cabeçalhos das perguntas
+   
     const accordionHeaders = document.querySelectorAll('.accordion-header');
 
     accordionHeaders.forEach(header => {
@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     otherHeader.classList.remove('active');
                     const otherContent = otherHeader.nextElementSibling;
                     otherContent.style.maxHeight = null;
-                    otherContent.style.padding = '0 20px'; // Ajusta o padding para fechar
+                    otherContent.style.padding = '0 20px'; 
                 }
             });
 

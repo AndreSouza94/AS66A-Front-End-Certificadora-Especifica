@@ -1,5 +1,3 @@
-// Projeto/JS/redefinir-senha.js - Versão FINAL e Integrada
-
 import { resetPassword } from './auth.js'; 
 
 document.addEventListener("DOMContentLoaded", () => {

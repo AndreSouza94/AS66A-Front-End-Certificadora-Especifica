@@ -1,12 +1,10 @@
-// Projeto/JS/calculadora.js - Versão FINAL INTEGRADA com Gráfico Otimizado
-
 import { API_URL_AUTH, setAuthToken } from './auth.js'; 
 
 // Variável global para armazenar a instância do gráfico
 let chartInstance = null;
 let lastHistoryData = null; // Armazena o payload da última simulação
 
-// ===== MOCK DE TAXAS (Mantido para exibição no card lateral) =====
+
 const taxas = {
   selic: 15.00,
   cdi: 14.90,
@@ -130,9 +128,6 @@ checkAporte.addEventListener('change', () => {
     }
 });
 
-/*inputAporteMensal.addEventListener('blur', (e) => {
-    e.target.value = cleanCurrency(e.target.value).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-});*/
 
 
 // === LISTENER: SUBMISSÃO DO FORMULÁRIO (CHAMADA REAL) ===
@@ -146,16 +141,16 @@ form.addEventListener("submit", async (e) => {
 
     // Pega os dados dos campos (acessando diretamente no momento da submissão)
     const tipo = document.getElementById("tipo").value;
-    // CORREÇÃO: Usar parseFloat diretamente para campos type="number" para aceitar dot-decimal (14.02)
+   
     const valorInicial = parseFloat(document.getElementById("valor").value) || 0;
     const dataInicialStr = document.getElementById("data-inicial").value;
     const dataFinalStr = document.getElementById("data-final").value;
-    // CORREÇÃO: Usar parseFloat diretamente para campos type="number" (Rentabilidade)
+    
     const rentabilidade = parseFloat(document.getElementById("rentabilidade").value) || 0;
     
     let aporte = 0;
     if (document.getElementById("check-aporte").checked) {
-        // CORREÇÃO: Usar parseFloat diretamente para campos type="number" (Aporte Mensal)
+        
         aporte = parseFloat(document.getElementById("aporte-mensal").value) || 0;
     }
 
@@ -356,7 +351,7 @@ function renderChart(fullSeriesData) {
         const textColor = '#1d1d1f'; // Cor do texto do Chart.js (baseado no CSS)
 
         const datasets = [
-            // 1. MEU PATRIMÔNIO (Investimento - Cor Forte)
+            // 1. MEU PATRIMÔNIO 
             {
                 label: 'Meu Patrimônio',
                 data: patrimonio,

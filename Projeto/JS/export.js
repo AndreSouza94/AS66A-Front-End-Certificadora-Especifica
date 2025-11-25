@@ -1,5 +1,5 @@
 document.getElementById("exportCsv").addEventListener("click", function() {
-  // CORREÇÃO: Usando o novo seletor da tabela
+  
   const table = document.querySelector(".history-table"); 
     
   if (!table) {

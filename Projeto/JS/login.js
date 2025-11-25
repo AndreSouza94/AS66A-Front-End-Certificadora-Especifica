@@ -1,5 +1,3 @@
-// Projeto/JS/login.js - Versão final e integrada
-
 import { registerUser, loginUser } from './auth.js'; 
 
 // Referências aos elementos

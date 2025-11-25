@@ -2,7 +2,7 @@
 
 import { API_URL_AUTH, setAuthToken } from './auth.js'; 
 
-// Variáveis globais para os botões de ação
+
 const removeSelectedBtn = document.getElementById('removeSelected');
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -60,7 +60,7 @@ const formatPercent = (value) => {
  * Remove uma simulação pelo ID usando o endpoint DELETE /historico.
  */
 const deleteHistoryItem = async (idHistorico) => {
-    const endpoint = `${API_URL_AUTH}/historico`; // DELETE /api/auth/historico
+    const endpoint = `${API_URL_AUTH}/historico`; 
     try {
         const response = await axios.delete(endpoint, {
             data: { 
